@@ -6,7 +6,7 @@
 
 This git repo is used for releasing ALL 5G measurement datasets collected by MSSN group led by Prof Peng (https://www.cs.purdue.edu/homes/chunyi/) at Department of Computer Science, Purdue University. 
 
-We have conducted 5G measurement studies since April 2021. In this repo, we have included all the 5G measurement datasets released after April 2024, as well as the links to the datasets previously released in individual projects before April 2024. So far,  our datasets of 5G measurements over operational cellualr networks include 
+We have conducted 5G measurement studies since April 2021. In this repo, we have included all the 5G measurement datasets released after April 2024, as well as the links to the datasets previously released in individual projects before April 2024. So far,  our datasets of 5G measurement studies over operational cellualr networks include 
 
 (1) Aerial 5G in West Lafayette 
 - Release: April 30, 2024
