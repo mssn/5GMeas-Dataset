@@ -1,0 +1,1307 @@
+% REVISED FOR MSSN@PURDUE 
+% Date: 02/2024
+% 
+% Note: to use package fontspec,
+% use XeLaTeX to compile
+
+\documentclass{article}
+\usepackage{siunitx}
+% \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+%\usepackage{verbatim}
+%\usepackage{sansmath}
+\usepackage{blindtext}
+\usepackage[active,tightpage]{preview}
+\usepgfplotslibrary{fillbetween}
+%\usepgfplotslibrary{statistics}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+%\usetikzlibrary{pgfplots.statistics}
+
+\pgfplotsset{compat=newest}
+
+%\usepackage{fontspec}
+%\setmainfont[
+%BoldFont={Arial Bold},
+%ItalicFont={Arial Italic},
+%BoldItalicFont={Arial Bold Italic}
+%]{Arial}
+
+
+\makeatletter
+\pgfplotsset{
+my filter/.style args={every#1between#2and#3}{%
+/pgfplots/x filter/.append code={%
+\ifnum\coordindex<#2%
+  % Nothing
+\else% Did we pass #3?
+  \ifnum\coordindex>#3%
+    %Nothing
+  \else% Ok filter is on, don't disturb \pgfmathresult for convenience
+    \pgfmathsetmacro\temp{int(mod(\coordindex,#1))}%
+    \ifnum0=\temp\relax% Are we on the nth point?
+      % Yes do nothing let it pass
+    \else% discard it
+      \let\pgfmathresult\pgfutil@empty
+    \fi%
+  \fi%
+\fi%
+}}}
+\makeatother
+
+
+
+\usepgfplotslibrary{statistics}
+\makeatletter
+\pgfplotsset{
+	boxplot prepared from table/.code={
+		\def\tikz@plot@handler{\pgfplotsplothandlerboxplotprepared}%
+		\pgfplotsset{
+			/pgfplots/boxplot prepared from table/.cd,
+			#1,
+		}
+	},
+	/pgfplots/boxplot prepared from table/.cd,
+	table/.code={\pgfplotstablecopy{#1}\to\boxplot@datatable},
+	row/.initial=0,
+	make style readable from table/.style={
+		#1/.code={
+			\pgfplotstablegetelem{\pgfkeysvalueof{/pgfplots/boxplot prepared from table/row}}{##1}\of\boxplot@datatable
+			\pgfplotsset{boxplot/#1/.expand once={\pgfplotsretval}}
+		}
+	},
+make style readable from table=draw position,
+	make style readable from table=lower whisker,
+	make style readable from table=upper whisker,
+	make style readable from table=lower quartile,
+	make style readable from table=upper quartile,
+	make style readable from table=median,
+	make style readable from table=lower notch,
+	make style readable from table=upper notch
+}
+\makeatother
+
+\makeatletter
+\pgfplotsset{% basis: example on p. 262 of the pgfplots manual
+	/pgfplots/area legend/.style={
+		/pgfplots/legend image code/.code={
+			\draw[#1] (0cm,0.15em) rectangle (0.6*\pgfplotbarwidth,-0.15em);
+		}, },
+}
+\makeatother
+
+%\definecolor{myred}{RGB}{202,0,32}
+%\definecolor{myorange}{RGB}{244,165,130}
+%\definecolor{myviolet}{RGB}{194,165,207}
+%\definecolor{mycyan}{RGB}{146,197,222}
+%\definecolor{myblue}{RGB}{5,113,176}
+%\definecolor{mygreen}{RGB}{127,191,123}
+%\definecolor{mytile}{RGB}{27,120,55}
+%\definecolor{myblack}{RGB}{60,60,60}
+%% \definecolor{palette3}{RGB}{247,247,247}
+
+
+\definecolor{myred}{RGB}{200,0,0}
+\definecolor{myorange}{RGB}{250,150,100}
+\definecolor{myviolet}{RGB}{194,165,207}
+\definecolor{mycyan}{RGB}{146,197,222}
+\definecolor{myblue}{RGB}{0,100,200}
+\definecolor{mygreen}{RGB}{100,200,100}
+\definecolor{mytile}{RGB}{27,120,55}
+\definecolor{myblack}{RGB}{60,60,60}
+
+
+\pgfplotsset{xtick style={draw=none}}
+
+\begin{document}
+
+
+%\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_700_125290_subroute3.csv}\datatablea
+%\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_721_520110_subroute3.csv}\datatableb
+%\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_317_520110_subroute3.csv}\datatablec
+%\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_749_520110_subroute3.csv}\datatabled
+%\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_459_520110_subroute3.csv}\datatablee
+%\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_all_all_subroute3.csv}\datatablef
+
+\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_700_125290_subroute3.csv}\datatablea
+\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_721_520110_subroute3.csv}\datatableb
+\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_749_520110_subroute3.csv}\datatablec
+\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_317_520110_subroute3.csv}\datatabled
+\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_459_520110_subroute3.csv}\datatablee
+\pgfplotstableread[col sep = comma]{thput_ul_percentile_90_0.0001_r1_all_all_subroute3.csv}\datatablef
+
+\begin{tikzpicture}
+%\pgfkeys{
+%	/pgf/number format/precision=2, 
+%	/pgf/number format/fixed zerofill=true,
+%	/pgf/number format/fixed
+%}
+
+% Plot n (n = 1, 2, 3, 4, 5) 
+% y-axis (ymin_unit, ymax_unit) = (0, 80)
+% for n-th plot,
+% 	ymax_n = ymin_unit  + n * (ymax_unit - ymin_unit)
+% 	ymin_n = ymin_unit +   (n-5) * (ymax_unit - ymin_unit) 
+
+
+\begin{axis}[
+    % my filter=every 100 between 0 and 18000,
+    % ybar,
+    name=plot1,
+    boxplot/draw direction=y,
+    %box plot width=0.5em,
+    %axis y,
+    %axis y line*=left,
+    %axis x line*=middle,
+    %y dir=reverse,
+    % box plot width=0.5em,
+    axis y line*=left,
+    axis x line*=top, %middle,
+    width   = 2.3cm,
+    height  = 3.5cm,% 1.5 cm
+    % w:h: 14cm vs 4cm (single column
+    % w:h: 7cm vs 4cm (1/2 column)
+	xmin=40.4616,
+	xmax=40.4643,	
+%    ytick={0, 100, 200},
+%    yticklabels={0,100, 200},
+  	ymax= 85,  % yrange * 1
+  	ymin= -425, % 
+%    ytick={0, 200, 400},
+%    yticklabels={0, 200,400},
+       ytick={},
+       yticklabels={},
+       yticklabel style={xshift=1mm},
+       %xtick pos=left,
+    %xtick={0,15, 30,45},
+   % xticklabels ={,15s,30s,45s},
+    scale only axis = true,
+    	major grid style={line width=.2pt,draw=gray!50},
+    	minor tick num=4,
+    xtick align = inside,
+    tick label style={/pgf/number format/assume math mode=true},
+%    xticklabel style = {font=\normalsize},
+%    yticklabel style = {font=\normalsize},
+    xticklabel style={yshift=3ex, anchor=south},
+    xticklabels={},
+    % % xticklabel pos=right,
+    % xtick pos = left,
+    % ytick pos = left,
+    % % yticklabel pos=right,
+    % % enlargelimits=0.15,
+    ylabel={},
+    ylabel style={
+%        font=\small,
+        text width=0.8cm,
+        yshift =  -5 pt,
+        xshift = 40 pt,
+    },
+%    xlabel style={
+%        font=\normalsize,
+%        at={(axis description cs:0.5,-0.1)},
+%        anchor=north,
+%        xshift = 0 pt,
+%    },
+    legend style={
+	 at      = {(1, 1)},
+%        legend entries = {Default runs, Customized runs},
+%        font    = \small, % \normalsize,
+        fill    = none,
+        draw    = none,
+%        anchor  = south east,
+        legend cell align   = left,
+        legend columns      = 1,
+    },
+    ]
+    
+\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myorange,
+	% draw opacity=0.7,
+	line width  = 2pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = red,
+	%fill = red,
+	name path = A,
+	]
+	table[x=grid_lon,y=thput_50]      from \datatablef;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myorange,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = red,
+	%fill = red,
+	name path = B,
+	]
+	table[x=grid_lon,y=thput_25]      from \datatablef;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myorange,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = red,
+	%fill = red,
+	name path = C,
+	]
+	table[x=grid_lon,y=thput_75]      from \datatablef;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myorange,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = red,
+	%fill = red,
+	name path = D,
+	]
+	table[x=grid_lon,y=thput_5]      from \datatablef;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myorange,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = red,
+	%fill = red,
+	name path = E,
+	]
+	table[x=grid_lon,y=thput_95]      from \datatablef;
+	
+	\addplot[myorange!20] fill between[of=D and E];
+	\addplot[myorange!60] fill between[of=B and C];
+	
+	
+	%table[x=time_delta,y=throughput_ul]      from \cellsettable \closedcycle;
+	%\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(0,0) (2000,0)};
+	
+	%\legend{Downlink, Uplink}
+\end{axis}
+
+
+\begin{axis}[
+    name=plot2,
+    % my filter=every 100 between 0 and 18000,
+    % line width = 1pt,
+    % ybar,
+    %boxplot/draw direction=y,
+    %box plot width=0.5em,
+    axis y,
+   %axis y line*=left,
+   % axis x line*=bottom,
+    axis x,
+    %y dir=reverse,
+    width   = 2.3cm,
+    height  = 3.5cm,% 1.5 cm
+	% example A-2
+	xmin=40.4616,
+	xmax=40.4643,			
+%    scale only axis = true,
+%    xtick={20, 50,80,110},
+%    xticklabels ={,30s,60s,90s},
+    	ymax=170, 
+   	ymin=-340,
+    %xmax    = 50,		
+    %xmin    = 0,		
+    scale only axis = true,
+        	major grid style={line width=.2pt,draw=gray!50},
+    	minor tick num=4,
+    %xtick={0,50,100,150,200,250},
+    %xticklabels ={0,1,2,3,4,5,6,7,,8,9,10,11},
+    %xticklabels={0,50s,100s,150s,200s,250s},
+%    xticklabels ={,30s,60s,90s},
+%s    xtick align = inside,
+    tick label style={/pgf/number format/assume math mode=true},
+%    ytick={30, 60},
+%    yticklabels={30, 60},
+       ytick={},
+       yticklabels={},
+       yticklabel style={xshift=1mm},
+    %4G only, , , 4G+5G$_m$,},
+    %{1,2,3,4,5},
+    xticklabel style={yshift=-12pt, anchor=south},
+    %yticklabel style = {font=\small},
+    xticklabels={},
+    % % xticklabel pos=right,
+    % xtick pos = left,
+    % ytick pos = left,
+    % % yticklabel pos=right,
+    % % enlargelimits=0.15,
+    legend style={
+%        at      = {(1, 1.06)},
+%        legend entries = {Default runs, Customized runs},
+       % font    = \normalsize,
+        fill    = none,
+        draw    = none,
+%        anchor  = south east,
+        legend cell align   = left,
+        legend columns      = 2,
+    },
+    ylabel={},
+    ylabel style={
+        %font=\small,
+        %text width=0.8cm,
+        % at={(current axis.north west)},
+        %rotate=-90,
+        %xshift= 0.05cm,
+        %yshift=-0.75cm,
+        xshift= -0.3cm,
+        %yshift= 0.24cm,
+        yshift= -0.15cm,
+    },
+    %xlabel={Location in static tests},
+    xlabel style={
+        %font=\normalsize,
+        at={(axis description cs:0.5,-0.05)},
+        anchor=north,
+        % at={(current axis.north west)},
+        % rotate=-90,
+        % xshift=-1ex,
+        xshift = 0 pt,
+        % yshift = 5 pt,
+    },
+    ]
+   
+\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	% draw opacity=0.7,
+	line width  = 2pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = A1,
+	]
+	table[x=grid_lon,y=thput_50]      from \datatablee;
+
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = B1,
+	]
+	table[x=grid_lon,y=thput_25]      from \datatablee;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = C1,
+	]
+	table[x=grid_lon,y=thput_75]      from \datatablee;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = D1,
+	]
+	table[x=grid_lon,y=thput_5]      from \datatablee;
+%	table[x=grid_lon,y=thput_10]      from \datatablee;
+%	table[x=grid_lon,y=thput_1]      from \datatablee;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = E1,
+	]
+	table[x=grid_lon,y=thput_95]      from \datatablee;
+	
+	\addplot[myblue!20] fill between[of=D1 and E1];
+	\addplot[myblue!60] fill between[of=B1 and C1];
+	
+\end{axis}
+
+\begin{axis}[
+	name=plot3,
+	% my filter=every 100 between 0 and 18000,
+	% line width = 1pt,
+	% ybar,
+	%boxplot/draw direction=y,
+	%box plot width=0.5em,
+	axis y,
+	%ymode=log,
+	%axis y line*=left,
+	% axis x line*=bottom,
+	axis x,
+	%y dir=reverse,
+	width   = 2.3cm,
+    	height  = 3.5cm,% 1.5 cm
+	% example A-2
+	xmin=40.4616,
+	xmax=40.4643,		
+	%    scale only axis = true,
+	%    xtick={20, 50,80,110},
+	%    xticklabels ={,30s,60s,90s},
+	ymax=255, 
+	ymin=-255,
+	%xmax    = 50,		
+	%xmin    = 0,		
+	scale only axis = true,
+	major grid style={line width=.2pt,draw=gray!50},
+    	minor tick num=4,
+	%xtick={0,100,200,300},
+	%xticklabels ={0,1,2,3,4,5,6,7,,8,9,10,11},
+	xticklabels={},
+	%    xticklabels ={,30s,60s,90s},
+	%s    xtick align = inside,
+	xticklabel style={yshift=-12pt, anchor=south},
+	tick label style={/pgf/number format/assume math mode=true},
+%	ytick={30, 60},
+%	yticklabels={30, 60},
+	ytick={},
+        yticklabels={},
+       yticklabel style={xshift=1mm},
+%yticklabel style = {font=\small},
+% % xticklabel pos=right,
+% xtick pos = left,
+% ytick pos = left,
+% % yticklabel pos=right,
+% % enlargelimits=0.15,
+legend style={
+	%        at      = {(1, 1.06)},
+	%        legend entries = {Default runs, Customized runs},
+	%font    = \normalsize,
+	fill    = none,
+	draw    = none,
+	%        anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 2,
+},
+ylabel={},
+ylabel style={
+	%font=\small,
+	%text width=0.8cm,
+	% at={(current axis.north west)},
+	%rotate=-90,
+	%xshift= 0.05cm,
+	%yshift=-0.75cm,
+	xshift= -2.15cm,
+	yshift= -0.15 cm,
+},
+%xlabel={Location in static tests},
+xlabel style={
+	%font=\normalsize,
+	at={(axis description cs:0.5,-0.05)},
+	anchor=north,
+	% at={(current axis.north west)},
+	% rotate=-90,
+	% xshift=-1ex,
+	xshift = 0 pt,
+	% yshift = 5 pt,
+},
+]
+
+%    currarrow,
+%    pos=0.5, 
+%    xscale=-1,
+%    sloped,
+%    scale=2] {};
+
+\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	% draw opacity=0.7,
+	line width  = 2pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = myblue,
+	%fill = myblue,
+	name path = A,
+	]
+	table[x=grid_lon,y=thput_50]      from \datatabled;
+
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = myblue,
+	%fill = myblue,
+	name path = B,
+	]
+	table[x=grid_lon,y=thput_25]      from \datatabled;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = myblue,
+	%fill = myblue,
+	name path = C,
+	]
+	table[x=grid_lon,y=thput_75]      from \datatabled;
+	
+	\addplot[
+	dashed,
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = myblue,
+	%fill = myblue,
+	name path = D,
+	]
+	table[x=grid_lon,y=thput_5]      from \datatabled;
+	
+	\addplot[
+	dashed,
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = myblue,
+	%fill = myblue,
+	name path = E,
+	]
+	table[x=grid_lon,y=thput_95]      from \datatabled;
+	
+	\addplot[myblue!20] fill between[of=D and E];
+	\addplot[myblue!60] fill between[of=B and C];
+	
+
+\end{axis}
+
+\begin{axis}[
+	name=plot4,
+	% my filter=every 100 between 0 and 18000,
+	% line width = 1pt,
+	% ybar,
+	%boxplot/draw direction=y,
+	%box plot width=0.5em,
+	axis y,
+	%ymode=log,
+	%axis y line*=left,
+	% axis x line*=bottom,
+	axis x,
+	%y dir=reverse,
+	width   = 2.3cm,
+    	height  = 3.5cm,% 1.5 cm
+	% example A-2
+	xmin=40.4616,
+	xmax=40.4643,			
+	%    scale only axis = true,
+	%    xtick={20, 50,80,110},
+	%    xticklabels ={,30s,60s,90s},
+	ymax=340, %500*750/300+500
+	ymin=-170,
+	%xmax    = 50,		
+	%xmin    = 0,		
+	scale only axis = true,
+	major grid style={line width=.2pt,draw=gray!50},
+    	minor tick num=4,
+	%xtick={0,100,200,300},
+	%xticklabels ={0,1,2,3,4,5,6,7,,8,9,10,11},
+	xticklabels={},
+	%    xticklabels ={,30s,60s,90s},
+	%s    xtick align = inside,
+	tick label style={/pgf/number format/assume math mode=true},
+%	ytick={30, 60},
+%	yticklabels={30, 60},
+	ytick={},
+       yticklabels={},
+       yticklabel style={xshift=1mm},
+	%4G only, , , 4G+5G$_m$,},
+%{1,2,3,4,5},
+xticklabel style={yshift=-12pt, anchor=south},
+%yticklabel style = {font=\small},
+% % xticklabel pos=right,
+% xtick pos = left,
+% ytick pos = left,
+% % yticklabel pos=right,
+% % enlargelimits=0.15,
+legend style={
+	%        at      = {(1, 1.06)},
+	%        legend entries = {Default runs, Customized runs},
+	%font    = \normalsize,
+	fill    = none,
+	draw    = none,
+	%        anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 2,
+},
+ylabel style={
+	%font=\small,
+	%text width=0.8cm,
+	% at={(current axis.north west)},
+	%rotate=-90,
+	%xshift= 0.05cm,
+	%yshift=-0.75cm,
+	xshift= 0cm,
+	yshift= -0.15 cm,
+},
+%xlabel={Location in static tests},
+xlabel style={
+	%font=\normalsize,
+	at={(axis description cs:0.5,-0.05)},
+	anchor=north,
+	% at={(current axis.north west)},
+	% rotate=-90,
+	% xshift=-1ex,
+	xshift = 0 pt,
+	% yshift = 5 pt,
+},
+]
+
+\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	% draw opacity=0.7,
+	line width  = 2pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = blue,
+	%fill = blue,
+	name path = A,
+	]
+	table[x=grid_lon,y=thput_50]      from \datatablec;
+
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = blue,
+	%fill = blue,
+	name path = B,
+	]
+	table[x=grid_lon,y=thput_25]      from \datatablec;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = blue,
+	%fill = blue,
+	name path = C,
+	]
+	table[x=grid_lon,y=thput_75]      from \datatablec;
+	
+	\addplot[
+	dashed,
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = blue,
+	%fill = blue,
+	name path = D,
+	]
+	table[x=grid_lon,y=thput_5]      from \datatablec;
+	
+	\addplot[
+	dashed,
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = blue,
+	%fill = blue,
+	name path = E,
+	]
+	table[x=grid_lon,y=thput_95]      from \datatablec;
+	
+	\addplot[myblue!20] fill between[of=D and E];
+	\addplot[myblue!60] fill between[of=B and C];
+	
+		%\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,80) (40.47,80)};
+%\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,160) (40.47,160)};
+%\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,240) (40.47,240)};
+%\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,320) (40.47,320)};
+
+%\node[font=\normalsize, right] at (axis cs: 40.4610,380) {\textbf{h = 120m}};
+%\node[font=\normalsize, right]at (axis cs: 40.4610,300) {\textbf{h = 90m}};
+%\node[font=\normalsize, right]at (axis cs: 40.4610,220) {\textbf{h = 60m}};
+%\node[font=\normalsize, right]at (axis cs: 40.4610,140) {\textbf{h = 30m}};
+%\node[font=\normalsize, right]at (axis cs: 40.4610,60) {\textbf{h = 0m}};
+
+\end{axis}
+
+\begin{axis}[
+    name=plot2,
+    % my filter=every 100 between 0 and 18000,
+    % line width = 1pt,
+    % ybar,
+    %boxplot/draw direction=y,
+    %box plot width=0.5em,
+    axis y,
+   %axis y line*=left,
+   % axis x line*=bottom,
+    axis x,
+    %y dir=reverse,
+    width   = 2.3cm,
+    height  = 3.5cm,% 1.5 cm
+	% example A-2
+	xmin=40.4616,
+	xmax=40.4643,			
+%    scale only axis = true,
+%    xtick={20, 50,80,110},
+%    xticklabels ={,30s,60s,90s},
+    	ymax=425, 
+   	ymin=-85,
+    %xmax    = 50,		
+    %xmin    = 0,		
+    scale only axis = true,
+        	major grid style={line width=.2pt,draw=gray!50},
+    	minor tick num=4,
+    %xtick={0,50,100,150,200,250},
+    %xticklabels ={0,1,2,3,4,5,6,7,,8,9,10,11},
+    %xticklabels={0,50s,100s,150s,200s,250s},
+%    xticklabels ={,30s,60s,90s},
+%s    xtick align = inside,
+    tick label style={/pgf/number format/assume math mode=true},
+%    ytick={30, 60},
+%    yticklabels={30, 60},
+       ytick={},
+       yticklabels={},
+       yticklabel style={xshift=1mm},
+    %4G only, , , 4G+5G$_m$,},
+    %{1,2,3,4,5},
+    xticklabel style={yshift=-12pt, anchor=south},
+    %yticklabel style = {font=\small},
+    xticklabels={},
+    % % xticklabel pos=right,
+    % xtick pos = left,
+    % ytick pos = left,
+    % % yticklabel pos=right,
+    % % enlargelimits=0.15,
+    legend style={
+%        at      = {(1, 1.06)},
+%        legend entries = {Default runs, Customized runs},
+       % font    = \normalsize,
+        fill    = none,
+        draw    = none,
+%        anchor  = south east,
+        legend cell align   = left,
+        legend columns      = 2,
+    },
+    ylabel={},
+    ylabel style={
+        %font=\small,
+        %text width=0.8cm,
+        % at={(current axis.north west)},
+        %rotate=-90,
+        %xshift= 0.05cm,
+        %yshift=-0.75cm,
+        xshift= -0.3cm,
+        %yshift= 0.24cm,
+        yshift= -0.15cm,
+    },
+    %xlabel={Location in static tests},
+    xlabel style={
+        %font=\normalsize,
+        at={(axis description cs:0.5,-0.05)},
+        anchor=north,
+        % at={(current axis.north west)},
+        % rotate=-90,
+        % xshift=-1ex,
+        xshift = 0 pt,
+        % yshift = 5 pt,
+    },
+    ]
+   
+\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	% draw opacity=0.7,
+	line width  = 2pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = A1,
+	]
+	table[x=grid_lon,y=thput_50]      from \datatableb;
+
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = B1,
+	]
+	table[x=grid_lon,y=thput_25]      from \datatableb;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = myblue,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = C1,
+	]
+	table[x=grid_lon,y=thput_75]      from \datatableb;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = D1,
+	]
+	table[x=grid_lon,y=thput_5]      from \datatableb;
+%	table[x=grid_lon,y=thput_10]      from \datatablee;
+%	table[x=grid_lon,y=thput_1]      from \datatablee;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= myblue,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = orange,
+	%fill = orange,
+	name path = E1,
+	]
+	table[x=grid_lon,y=thput_95]      from \datatableb;
+	
+	\addplot[myblue!20] fill between[of=D1 and E1];
+	\addplot[myblue!60] fill between[of=B1 and C1];
+	
+\end{axis}
+
+\begin{axis}[
+	name=plot5,
+	% my filter=every 100 between 0 and 18000,
+	% line width = 1pt,
+	% ybar,
+	%boxplot/draw direction=y,
+	%box plot width=0.5em,
+	axis y,
+	%ymode=log,
+	%axis y line*=left,
+ 	axis x line*=bottom,
+	%axis x,
+	%grid=x,
+    	%grid style={line width=.1pt, draw=gray!20},
+	%y dir=reverse,
+	width   = 2.3cm,
+    	height  = 3.5cm,% 1.5 cm
+	% example A-2
+	xmin=40.4616,
+	xmax=40.4643,		
+	%    scale only axis = true,
+	%    xtick={20, 50,80,110},
+	%    xticklabels ={,30s,60s,90s},
+	ymax=510, 
+	ymin=0,
+	%xmax    = 50,		
+	%xmin    = 0,		
+	scale only axis = true,
+	%grid=both,
+	major grid style={line width=.2pt,draw=gray!50},
+    	minor tick num=4,
+	%xtick={40.4606, 40.4623,40.4640,40.4657,40.4674},
+	%xtick={40.4607,40.4625,40.4643,40.4661,40.4679},
+	xtick={40.4606, 40.46235,40.463225,40.4641,40.46585,40.4676},
+	xtick={40.46235,40.463225,40.4641},
+	%xticklabels ={0,1,2,3,4,5,6,7,,8,9,10,11},
+	xticklabels={200, 300, 400},
+	xticklabel style={xshift=2mm},
+	xtick align = inside,
+%	tick label style={/pgf/number format/assume math mode=true},
+%	ytick={30, 60},
+%	yticklabels={30, 60},
+	ytick={},
+        yticklabels={},
+        yticklabel style={xshift=1mm},
+%xticklabel style={yshift=-12pt, anchor=south},
+%yticklabel style = {font=\small},
+% % xticklabel pos=right,
+% xtick pos = left,
+% ytick pos = left,
+% % yticklabel pos=right,
+% % enlargelimits=0.15,
+	%xlabel={Location (m)},
+	xlabel={Over SR2},
+        xlabel style={
+        %font=\small,
+        % at={(current axis.north west)},
+        % rotate=-90,
+       % xshift= -10pt,
+        yshift = 5pt,
+    },
+legend style={
+	%        at      = {(1, 1.06)},
+	%        legend entries = {Default runs, Customized runs},
+	%font    = \normalsize,
+	fill    = none,
+	draw    = none,
+	%        anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 2,
+},
+%ylabel={Uplink throughput (Mbps)},
+ylabel={Thput. (0-85 Mbps)},
+ylabel style={
+	%font=\small,
+	%text width=0.8cm,
+	% at={(current axis.north west)},
+	%rotate=-90,
+	%xshift= 0.05cm,
+	%yshift=-0.75cm,
+	xshift= 0cm,
+	yshift= -0.25 cm,
+},
+xlabel style={
+%	font=\normalsize,
+	% at={(current axis.north west)},
+	% rotate=-90,
+	% xshift=-1ex,
+	xshift = 0 pt,
+	% yshift = 5 pt,
+},
+  xticklabel style={
+        %font=\small,
+        align=center,
+        xshift= 0pt,
+        yshift = 3pt,
+    },
+]
+
+\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = gray,
+	% draw opacity=0.7,
+	line width  = 2pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = gray,
+	%fill = gray,
+	name path = A,
+	]
+	table[x=grid_lon,y=thput_50]      from \datatablea;
+	
+
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = gray,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = gray,
+	%fill = gray,
+	name path = B,
+	]
+	table[x=grid_lon,y=thput_25]      from \datatablea;
+	
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       = gray,
+	draw opacity=0.3,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = gray,
+	%fill = gray,
+	name path = C,
+	]
+	table[x=grid_lon,y=thput_75]      from \datatablea;
+	
+	\addplot[
+	dashed,
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= gray,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = gray,
+	%fill = gray,
+	name path = D,
+	]
+	table[x=grid_lon,y=thput_5]      from \datatablea;
+	
+	\addplot[
+	dashed,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color= gray,
+	draw opacity=0.1,
+	line width  = 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = gray,
+	%fill = gray,
+	name path = E,
+	]
+	table[x=grid_lon,y=thput_95]      from \datatablea;
+	
+	\addplot[gray!20] fill between[of=D and E];
+	\addplot[gray!60] fill between[of=B and C];
+	
+%\node[font=\normalsize, right] at (axis cs: 40.4610,380) {\textbf{h = 120m}};
+\node[font=\normalsize, right]at (axis cs: 40.4616,485) {\textbf{All}};
+\node[font=\normalsize, right]at (axis cs: 40.4616,400) {\textbf{C1}@{\textrm{5G$_1$}}};
+\node[font=\normalsize, right]at (axis cs: 40.4616,315) {\textbf{C2}@{\textrm{5G$_1$}}};
+\node[font=\normalsize, right]at (axis cs: 40.4616,230) {\textbf{C3}@{\textrm{5G$_1$}}};
+\node[font=\normalsize, right]at (axis cs: 40.4616,145) {\textbf{C4}@{\textrm{5G$_1$}}};
+\node[font=\normalsize, right]at (axis cs: 40.4616,60) {\textbf{C6}@{\textrm{5G$_2$}}};
+
+% manually create x-axis for each plot 
+\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,85) (40.47,85)};
+\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,170) (40.47,170)};
+\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,255) (40.47,255)};
+\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,340) (40.47,340)};
+\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(40.46,425) (40.47,425)};
+
+%	xtick={40.4607,40.4625,40.4643,40.4661,40.4679},
+%	xtick={40.4606, 40.46235,40.4641,40.46585,40.4676},
+\addplot+[mark=none, dashed, line width=.2pt,gray!50t] coordinates {(40.46235,0) (40.46235,510)};
+\addplot+[mark=none, dashed, line width=.2pt,gray!50t] coordinates {(40.463225,0) (40.463225,510)};
+\addplot+[mark=none, dashed, line width=.2pt,gray!50t] coordinates {(40.4641,0) (40.4641,510)};
+\addplot+[mark=none, dashed, line width=.2pt,gray!50t] coordinates {(40.46585,0) (40.46585,510)};
+\addplot+[mark=none, dashed, line width=.2pt,gray!50t] coordinates {(40.4676,0) (40.4676,510)};
+
+\end{axis}
+
+
+
+\end{tikzpicture}
+
+
+\end{document}

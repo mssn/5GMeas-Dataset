@@ -1,0 +1,1405 @@
+% Note: to use package fontspec,
+% use XeLaTeX to compile
+
+\documentclass{article}
+\usepackage{siunitx}
+% \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{verbatim}
+%\usepackage{sansmath}
+\usepackage{blindtext}
+\usepackage[active,tightpage]{preview}
+%\usepgfplotslibrary{statistics}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+%\usetikzlibrary{pgfplots.statistics}
+\pgfplotsset{compat=newest}
+
+\newcommand\mtlarge{\fontsize{15pt}{18pt}\selectfont}
+%\usepackage{fontspec}
+%\setmainfont[
+%BoldFont={Arial Bold},
+%ItalicFont={Arial Italic},
+%BoldItalicFont={Arial Bold Italic}
+%]{Arial}
+
+
+\makeatletter
+\pgfplotsset{
+my filter/.style args={every#1between#2and#3}{%
+/pgfplots/x filter/.append code={%
+\ifnum\coordindex<#2%
+  % Nothing
+\else% Did we pass #3?
+  \ifnum\coordindex>#3%
+    %Nothing
+  \else% Ok filter is on, don't disturb \pgfmathresult for convenience
+    \pgfmathsetmacro\temp{int(mod(\coordindex,#1))}%
+    \ifnum0=\temp\relax% Are we on the nth point?
+      % Yes do nothing let it pass
+    \else% discard it
+      \let\pgfmathresult\pgfutil@empty
+    \fi%
+  \fi%
+\fi%
+}}}
+\makeatother
+
+\pgfplotsset{xtick style={draw=none}}
+
+%\usepgfplotslibrary{statistics}
+%\makeatletter
+%\pgfplotsset{
+%	boxplot prepared from table/.code={
+%		\def\tikz@plot@handler{\pgfplotsplothandlerboxplotprepared}%
+%		\pgfplotsset{
+%			/pgfplots/boxplot prepared from table/.cd,
+%			#1,
+%		}
+%	},
+%	/pgfplots/boxplot prepared from table/.cd,
+%	table/.code={\pgfplotstablecopy{#1}\to\boxplot@datatable},
+%	row/.initial=0,
+%	make style readable from table/.style={
+%		#1/.code={
+%			\pgfplotstablegetelem{\pgfkeysvalueof{/pgfplots/boxplot prepared from table/row}}{##1}\of\boxplot@datatable
+%			\pgfplotsset{boxplot/#1/.expand once={\pgfplotsretval}}
+%		}
+%	},
+%make style readable from table=draw position,
+%	make style readable from table=lower whisker,
+%	make style readable from table=upper whisker,
+%	make style readable from table=lower quartile,
+%	make style readable from table=upper quartile,
+%	make style readable from table=median,
+%	make style readable from table=lower notch,
+%	make style readable from table=upper notch
+%}
+%\makeatother
+
+%\makeatletter
+%\pgfplotsset{% basis: example on p. 262 of the pgfplots manual
+%	/pgfplots/area legend/.style={
+%		/pgfplots/legend image code/.code={
+%			\draw[#1] (0cm,0.15em) rectangle (0.6*\pgfplotbarwidth,-0.15em);
+%		}, },
+%}
+%\makeatother
+
+\pgfplotsset{
+	compat=newest,
+	legend image code/.code={
+		\draw[mark repeat=2,mark phase=2]
+		plot coordinates {
+			(0cm,0cm)
+			(0.3cm,0cm)        %% default is (0.3cm,0cm)
+			(0.6cm,0cm)         %% default is (0.6cm,0cm)
+		};%
+	}
+}
+
+\definecolor{myred}{RGB}{200,0,0}
+\definecolor{myorange}{RGB}{250,150,100}
+\definecolor{myviolet}{RGB}{194,165,207}
+\definecolor{mycyan}{RGB}{146,197,222}
+\definecolor{myblue}{RGB}{0,100,200}
+\definecolor{mygreen}{RGB}{100,200,100}
+\definecolor{mytile}{RGB}{27,120,55}
+\definecolor{myblack}{RGB}{60,60,60}
+
+
+\begin{document}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+%axis y line*=left,
+%axis x line*=middle,
+%y dir=reverse,
+width   = 4cm,
+height  = 2cm,
+xmax    = 135,
+xmin    = -15,
+ymax   = 99,
+ymin    = 0,
+%xtick align = inside,
+xtick style = {draw=none},
+scale only axis = true,
+tick label style={/pgf/number format/assume math mode=true},
+%ytick = {0, 20, ...,100},
+ytick = {0, 25, ...,100},
+%yticklabels = {},
+%yticklabel style = {font=\mtlarge},
+%xticklabel style = {font=\mtlarge},
+xticklabel style = {font=\normalsize},
+ymajorgrids=true,
+xticklabel style = {
+	font=\normalsize, 
+    xshift = 0mm,
+    yshift =1mm,},
+yticklabel style = {
+	font=\normalsize, 
+    xshift = 1mm,
+    yshift =0mm,},
+xtick={},
+%xticklabels = {},
+%xtick={3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 59},
+%xtick={2.5,11.5,20.5,29.5,38.5,47.5,56.50,65.50,74.50,83.50,92.50,101.5,110.5,119.5},
+%xticklabels = { 5145 \\ (742.5) , 2425 \\(871.5), 850 \\(1955 ), 1075 \\(1977.5), 1125 \\ (1982.5), 1150 \\)(1985), 2000\\(2115), 66486\\(2115), 2175\\(2132.5), 66661\\(2132.5), 66911\\(2157.5), 66936\\(2160), 9820\\(2355), 9840\\(2357)},
+%xticklabels = { 5145\\(742.5) , , 850 \\(1955), , 1125\\(1982.5), , 2000\\(2115), , 2175\\(2132.5), , 66911\\(2157.5), , 9820\\(2355MHz), },
+%xticklabels={R1,R2,R3,R4,R5},
+%xticklabels={675,850,1025,5110,5330,9820,9840,66486,66661,66686,66936,67086},
+%xticklabels={,850,,5110,,9820,,66486,,66686,,67086},
+xticklabels={},
+ylabel={percentage(\%)},%ylabel={Percentage (\%)},
+xlabel style={
+	font=\normalsize,
+        %xshift= 0 pt,
+	yshift =  4mm,
+ 	align=center
+},
+xlabel={$\sharp$ of 5G serving cells [1,9]},
+ylabel style={
+	font=\normalsize,
+	align=center,
+        xshift= -1.5mm,
+        yshift =-2mm,
+},
+%enlargelimits=0.015,
+ybar=0.3pt,
+%xbar interval = 0.7,
+%ybar stacked,
+bar width= 2pt,
+legend style={
+	%pos=outer north west, 
+	at      = {(1, 1)},
+	%font    = \mtlarge,
+	font    = \normalsize, 
+	%\normalsize,
+	fill    = none,
+	draw    = none,
+%	anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 1,
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.3cm,0.1cm); },
+%nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\pgfplotspointmeta}},
+%every node near coord/.append style={yshift=-10pt,font=\footnotesize,anchor=center,},
+]
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{1} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{2} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{3} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{4} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{5} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{6} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{7} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	pattern color=blue,
+%},
+% forget plot,
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{8} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\addplot+[
+gray,
+line width=0.5pt,
+%color=blue,
+fill=gray,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{9} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_0_0.0001_r1_lat_height.csv};
+
+\end{axis}
+
+\begin{axis}[
+%axis y line*=left,
+%axis x line*=middle,
+%y dir=reverse,
+width   = 4cm,
+height  = 2cm,
+xmax    = 135,
+xmin    = -15,
+ymax   = 99,
+ymin    = 0,
+%xtick align = inside,
+xtick style = {draw=none},
+scale only axis = true,
+tick label style={/pgf/number format/assume math mode=true},
+ytick = {0, 25, ...,100},
+yticklabels = {},
+%yticklabel style = {font=\mtlarge},
+%xticklabel style = {font=\mtlarge},
+xticklabel style = {font=\normalsize},
+ymajorgrids=true,
+xticklabel style = {
+	font=\normalsize, 
+    xshift = 0mm,
+    yshift =1mm,},
+yticklabel style = {
+	font=\normalsize, 
+    xshift = 1mm,
+    yshift =0mm,},
+xtick={},
+%xticklabels = {},
+%xtick={3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 59},
+%xtick={2.5,11.5,20.5,29.5,38.5,47.5,56.50,65.50,74.50,83.50,92.50,101.5,110.5,119.5},
+%xticklabels = { 5145 \\ (742.5) , 2425 \\(871.5), 850 \\(1955 ), 1075 \\(1977.5), 1125 \\ (1982.5), 1150 \\)(1985), 2000\\(2115), 66486\\(2115), 2175\\(2132.5), 66661\\(2132.5), 66911\\(2157.5), 66936\\(2160), 9820\\(2355), 9840\\(2357)},
+%xticklabels = { 5145\\(742.5) , , 850 \\(1955), , 1125\\(1982.5), , 2000\\(2115), , 2175\\(2132.5), , 66911\\(2157.5), , 9820\\(2355MHz), },
+%xticklabels={R1,R2,R3,R4,R5},
+%xticklabels={675,850,1025,5110,5330,9820,9840,66486,66661,66686,66936,67086},
+%xticklabels={,850,,5110,,9820,,66486,,66686,,67086},
+xticklabels={},
+ylabel={},
+xlabel style={
+	font=\normalsize,
+%	xshift= 0 pt,
+	yshift =  4mm,
+ 	align=center
+},
+xlabel={$\sharp$ of 5G serving cells [1,9]},
+ylabel style={
+	font=\normalsize,
+	align=center,
+        xshift= 0mm,
+        yshift =-4mm,
+},
+%enlargelimits=0.015,
+ybar=0.3pt,
+%xbar interval = 0.7,
+%ybar stacked,
+bar width= 2pt,
+legend style={
+	%pos=outer north west, 
+	at      = {(1, 1)},
+	%font    = \mtlarge,
+	font    = \normalsize, 
+	%\normalsize,
+	fill    = none,
+	draw    = none,
+%	anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 1,
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.3cm,0.1cm); },
+%nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\pgfplotspointmeta}},
+%every node near coord/.append style={yshift=-10pt,font=\footnotesize,anchor=center,},
+]
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{1} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{2} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{3} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{4} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{5} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{6} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{7} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	pattern color=blue,
+%},
+% forget plot,
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{8} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\addplot+[
+mygreen,
+line width=0.5pt,
+%color=blue,
+fill=mygreen,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{9} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_30_0.0001_r1_lat_height.csv};
+
+\end{axis}
+
+\begin{axis}[
+%axis y line*=left,
+%axis x line*=middle,
+%y dir=reverse,
+width   = 4cm,
+height  = 2cm,
+xmax    = 135,
+xmin    = -15,
+ymax   = 99,
+ymin    = 0,
+%xtick align = inside,
+xtick style = {draw=none},
+scale only axis = true,
+tick label style={/pgf/number format/assume math mode=true},
+ytick = {0, 25, ...,100},
+yticklabels = {},
+%yticklabel style = {font=\mtlarge},
+%xticklabel style = {font=\mtlarge},
+xticklabel style = {font=\normalsize},
+ymajorgrids=true,
+xticklabel style = {
+	font=\normalsize, 
+    xshift = 0mm,
+    yshift =1mm,},
+yticklabel style = {
+	font=\normalsize, 
+    xshift = 1mm,
+    yshift =0mm,},
+xtick={},
+%xticklabels = {},
+%xtick={3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 59},
+%xtick={2.5,11.5,20.5,29.5,38.5,47.5,56.50,65.50,74.50,83.50,92.50,101.5,110.5,119.5},
+%xticklabels = { 5145 \\ (742.5) , 2425 \\(871.5), 850 \\(1955 ), 1075 \\(1977.5), 1125 \\ (1982.5), 1150 \\)(1985), 2000\\(2115), 66486\\(2115), 2175\\(2132.5), 66661\\(2132.5), 66911\\(2157.5), 66936\\(2160), 9820\\(2355), 9840\\(2357)},
+%xticklabels = { 5145\\(742.5) , , 850 \\(1955), , 1125\\(1982.5), , 2000\\(2115), , 2175\\(2132.5), , 66911\\(2157.5), , 9820\\(2355MHz), },
+%xticklabels={R1,R2,R3,R4,R5},
+%xticklabels={675,850,1025,5110,5330,9820,9840,66486,66661,66686,66936,67086},
+%xticklabels={,850,,5110,,9820,,66486,,66686,,67086},
+xticklabels={},
+ylabel={},%ylabel={Percentage (\%)},
+xlabel style={
+	font=\normalsize,
+%	xshift= 0 pt,
+	yshift =  4mm,
+ 	align=center
+},
+xlabel={$\sharp$ of 5G serving cells [1,9]},
+ylabel style={
+	font=\normalsize,
+	align=center,
+        xshift= 0mm,
+        yshift =-4mm,
+},
+%enlargelimits=0.015,
+ybar=0.3pt,
+%xbar interval = 0.7,
+%ybar stacked,
+bar width= 2pt,
+legend style={
+	%pos=outer north west, 
+	at      = {(1, 1)},
+	%font    = \mtlarge,
+	font    = \normalsize, 
+	%\normalsize,
+	fill    = none,
+	draw    = none,
+%	anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 1,
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.3cm,0.1cm); },
+%nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\pgfplotspointmeta}},
+%every node near coord/.append style={yshift=-10pt,font=\footnotesize,anchor=center,},
+]
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{1} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{2} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{3} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{4} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{5} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{6} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{7} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	pattern color=blue,
+%},
+% forget plot,
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{8} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myblue,
+line width=0.5pt,
+%color=blue,
+fill=myblue,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{9} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_60_0.0001_r1_lat_height.csv};
+
+\end{axis}
+
+\begin{axis}[
+%axis y line*=left,
+%axis x line*=middle,
+%y dir=reverse,
+width   = 4cm,
+height  = 2cm,
+xmax    = 135,
+xmin    = -15,
+ymax   = 99,
+ymin    = 0,
+%xtick align = inside,
+xtick style = {draw=none},
+scale only axis = true,
+tick label style={/pgf/number format/assume math mode=true},
+ytick = {0, 25, ...,100},
+yticklabels = {},
+%yticklabel style = {font=\mtlarge},
+%xticklabel style = {font=\mtlarge},
+xticklabel style = {font=\normalsize},
+ymajorgrids=true,
+xticklabel style = {
+	font=\normalsize, 
+    xshift = 0mm,
+    yshift =1mm,},
+yticklabel style = {
+	font=\normalsize, 
+    xshift = 1mm,
+    yshift =0mm,},
+xtick={},
+%xticklabels = {},
+%xtick={3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 59},
+%xtick={2.5,11.5,20.5,29.5,38.5,47.5,56.50,65.50,74.50,83.50,92.50,101.5,110.5,119.5},
+%xticklabels = { 5145 \\ (742.5) , 2425 \\(871.5), 850 \\(1955 ), 1075 \\(1977.5), 1125 \\ (1982.5), 1150 \\)(1985), 2000\\(2115), 66486\\(2115), 2175\\(2132.5), 66661\\(2132.5), 66911\\(2157.5), 66936\\(2160), 9820\\(2355), 9840\\(2357)},
+%xticklabels = { 5145\\(742.5) , , 850 \\(1955), , 1125\\(1982.5), , 2000\\(2115), , 2175\\(2132.5), , 66911\\(2157.5), , 9820\\(2355MHz), },
+%xticklabels={R1,R2,R3,R4,R5},
+%xticklabels={675,850,1025,5110,5330,9820,9840,66486,66661,66686,66936,67086},
+%xticklabels={,850,,5110,,9820,,66486,,66686,,67086},
+xticklabels={},
+ylabel={},%ylabel={Percentage (\%)},
+xlabel style={
+	font=\normalsize,
+	%xshift= 1mm,
+	yshift = 4mm,
+ 	align=center,
+},
+xlabel={$\sharp$ of 5G serving cells [1,9]},
+ylabel style={
+	font=\normalsize,
+	align=center,
+        xshift= 0mm,
+        yshift =-4mm,
+},
+%enlargelimits=0.015,
+ybar=0.3pt,
+%xbar interval = 0.7,
+%ybar stacked,
+bar width= 2pt,
+legend style={
+	%pos=outer north west, 
+	at      = {(1, 1)},
+	%font    = \mtlarge,
+	font    = \normalsize, 
+	%\normalsize,
+	fill    = none,
+	draw    = none,
+%	anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 1,
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.3cm,0.1cm); },
+%nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\pgfplotspointmeta}},
+%every node near coord/.append style={yshift=-10pt,font=\footnotesize,anchor=center,},
+]
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{1} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{2} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{3} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{4} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{5} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{6} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{7} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	pattern color=blue,
+%},
+% forget plot,
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{8} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myorange,
+line width=0.5pt,
+%color=blue,
+fill=myorange,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{9} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_90_0.0001_r1_lat_height.csv};
+
+\end{axis}
+
+\begin{axis}[
+%axis y line*=left,
+%axis x line*=middle,
+%y dir=reverse,
+width   = 4cm,
+height  = 2cm,
+xmax    = 135,
+xmin    = -15,
+ymax   = 99,
+ymin    = 0,
+%xtick align = inside,
+xtick style = {draw=none},
+scale only axis = true,
+tick label style={/pgf/number format/assume math mode=true},
+ytick = {0, 25, ...,100},
+yticklabels = {},
+%yticklabel style = {font=\mtlarge},
+%xticklabel style = {font=\mtlarge},
+xticklabel style = {font=\normalsize},
+ymajorgrids=true,
+xticklabel style = {
+	font=\normalsize, 
+    xshift = 0mm,
+    yshift =1mm,},
+yticklabel style = {
+	font=\normalsize, 
+    xshift = 1mm,
+    yshift =0mm,},
+xtick={},
+%xticklabels = {},
+%xtick={3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 59},
+%xtick={2.5,11.5,20.5,29.5,38.5,47.5,56.50,65.50,74.50,83.50,92.50,101.5,110.5,119.5},
+%xticklabels = { 5145 \\ (742.5) , 2425 \\(871.5), 850 \\(1955 ), 1075 \\(1977.5), 1125 \\ (1982.5), 1150 \\)(1985), 2000\\(2115), 66486\\(2115), 2175\\(2132.5), 66661\\(2132.5), 66911\\(2157.5), 66936\\(2160), 9820\\(2355), 9840\\(2357)},
+%xticklabels = { 5145\\(742.5) , , 850 \\(1955), , 1125\\(1982.5), , 2000\\(2115), , 2175\\(2132.5), , 66911\\(2157.5), , 9820\\(2355MHz), },
+%xticklabels={R1,R2,R3,R4,R5},
+%xticklabels={675,850,1025,5110,5330,9820,9840,66486,66661,66686,66936,67086},
+%xticklabels={,850,,5110,,9820,,66486,,66686,,67086},
+xticklabels={},
+ylabel={},%ylabel={Percentage (\%)},
+xlabel style={
+	font=\normalsize,
+%	xshift= 0 pt,
+	yshift =  4mm,
+ 	align=center
+},
+xlabel={$\sharp$ of 5G serving cells [1,9]},
+ylabel style={
+	font=\normalsize,
+	align=center,
+        xshift= 0mm,
+        yshift =-4mm,
+},
+%enlargelimits=0.015,
+ybar=0.3pt,
+%xbar interval = 0.7,
+%ybar stacked,
+bar width= 2pt,
+legend style={
+	%pos=outer north west, 
+	at      = {(1, 1)},
+	%font    = \mtlarge,
+	font    = \normalsize, 
+	%\normalsize,
+	fill    = none,
+	draw    = none,
+%	anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 1,
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.3cm,0.1cm); },
+%nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\pgfplotspointmeta}},
+%every node near coord/.append style={yshift=-10pt,font=\footnotesize,anchor=center,},
+]
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{1} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{2} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{3} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{4} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{5} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{6} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{7} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	pattern color=blue,
+%},
+% forget plot,
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{8} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\addplot+[
+myred,
+line width=0.5pt,
+%color=blue,
+fill=myred,
+fill opacity = 0.3,
+%postaction={
+%	pattern=north east lines,
+%	%pattern=horizontal lines,
+%	pattern color=blue,
+%}
+]
+table[
+x expr = \thisrowno{0},
+y expr = \thisrowno{9} * 100,
+col sep=comma,
+] {nr_serving_cell_num_ratio_120_0.0001_r1_lat_height.csv};
+
+\end{axis}
+
+\begin{axis}[
+%axis y line*=left,
+%axis x line*=middle,
+%y dir=reverse,
+width   = 4cm,
+height  = 2cm,
+xmax    = 135,
+xmin    = -15,
+ymax   = 99,
+ymin    = 0,
+%xtick align = inside,
+xtick style = {draw=none},
+ytick style = {draw=none},
+scale only axis = true,
+tick label style={/pgf/number format/assume math mode=true},
+ytick = {},
+yticklabels = {},
+%yticklabel style = {font=\mtlarge},
+%xticklabel style = {font=\mtlarge},
+xticklabel style = {font=\normalsize},
+xticklabel style = {
+	font=\normalsize, 
+    xshift = 0mm,
+    yshift =1mm,},
+yticklabel style = {
+	font=\normalsize, 
+    xshift = 1mm,
+    yshift =0mm,},
+xtick={},
+%xticklabels = {},
+%xtick={3, 8, 13, 18, 23, 28, 33, 38, 43, 48, 53, 59},
+%xtick={2.5,11.5,20.5,29.5,38.5,47.5,56.50,65.50,74.50,83.50,92.50,101.5,110.5,119.5},
+%xticklabels = { 5145 \\ (742.5) , 2425 \\(871.5), 850 \\(1955 ), 1075 \\(1977.5), 1125 \\ (1982.5), 1150 \\)(1985), 2000\\(2115), 66486\\(2115), 2175\\(2132.5), 66661\\(2132.5), 66911\\(2157.5), 66936\\(2160), 9820\\(2355), 9840\\(2357)},
+%xticklabels = { 5145\\(742.5) , , 850 \\(1955), , 1125\\(1982.5), , 2000\\(2115), , 2175\\(2132.5), , 66911\\(2157.5), , 9820\\(2355MHz), },
+%xticklabels={R1,R2,R3,R4,R5},
+%xticklabels={675,850,1025,5110,5330,9820,9840,66486,66661,66686,66936,67086},
+%xticklabels={,850,,5110,,9820,,66486,,66686,,67086},
+xticklabels={},
+ylabel={},
+xlabel style={
+	font=\normalsize,
+%	xshift= 0 pt,
+	yshift =  4mm,
+ 	align=center
+},
+xlabel={},
+ylabel style={
+	font=\normalsize,
+	align=center,
+        xshift= 0mm,
+        yshift =-4mm,
+},
+legend style={
+	%pos=outer north west, 
+	at      = {(1, 1)},
+	%font    = \mtlarge,
+	font    = \normalsize, 
+	%\normalsize,
+	fill    = none,
+	draw    = none,
+%	anchor  = south east,
+	legend cell align   = left,
+	legend columns      = 1,
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.3cm,0.1cm); },
+%nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\pgfplotspointmeta}},
+%every node near coord/.append style={yshift=-10pt,font=\footnotesize,anchor=center,},
+]
+
+\addplot[mark=none, solid,black,line width=0.5pt] coordinates {(15,0) (15,102)} ;
+\addplot[mark=none, solid,black,line width=0.5pt] coordinates {(45,0) (45,102)} ;
+\addplot[mark=none, solid,black,line width=0.5pt] coordinates {(75,0) (75,102)} ;
+\addplot[mark=none, solid,black,line width=0.5pt] coordinates {(105,0) (105,102)} ;
+
+
+\node[font=\normalsize, center, gray]at (axis cs: -8.2,75) {\textbf{2}};
+\node[font=\normalsize, center, mygreen]at (axis cs: 30,60) {\textbf{5}};
+\node[font=\normalsize, center, myblue]at (axis cs: 62.7,40) {\textbf{6}};
+\node[font=\normalsize, center, myorange]at (axis cs: 87.3,32) {\textbf{4}};
+\node[font=\normalsize, center, myred]at (axis cs: 117.3,62) {\textbf{4}};
+
+\node[font=\normalsize, center,gray]at (axis cs: 0,90) {\texttt{h=0m}};
+\node[font=\normalsize, center,mygreen]at (axis cs: 30,90) {\texttt{30m}};
+\node[font=\normalsize, center,myblue]at (axis cs: 60,90) {\texttt{60m}};
+\node[font=\normalsize, center,myorange]at (axis cs: 90,90) {\texttt{90m}};
+\node[font=\normalsize, center,myred]at (axis cs: 120,90) {\texttt{120m}};
+
+\end{axis}
+
+\end{tikzpicture}
+
+\end{document}

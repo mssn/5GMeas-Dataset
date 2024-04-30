@@ -1,0 +1,292 @@
+
+
+%%\documentclass{article}
+\documentclass{standalone}
+\usepackage{siunitx}
+% \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+%\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{helvet,etoolbox}
+%\usepackage{sansmath}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+
+\newlength\figureheight
+\newlength\figurewidth
+\setlength\figureheight{11cm}
+\setlength\figurewidth{10cm}
+
+\pgfplotsset{compat=newest}
+
+%\pgfplotsset{
+%%/pgfplots/colormap={jet2}{rgb255(0cm)=(194,165,207) rgb255(2cm)=(202,0,32) 
+%%rgb255(4cm)=(55,198,223) rgb255(6cm)=(5,113,176) rgb255(8cm)=(127,191,123)}
+%%/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32)
+%%rgb255(4cm)=(244,165,130) rgb255(8cm)=(5,113,176)}
+%%/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32) rgb255(4cm)=(60,60,60) rgb255(8cm)=(5,113,176)}
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(200,0,0) rgb255(4cm)=(240,240,240) rgb255(8cm)=(0,100,200)}
+%}
+
+\pgfplotsset{
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(194,165,207) rgb255(2cm)=(202,0,32) 
+%rgb255(4cm)=(55,198,223) rgb255(6cm)=(5,113,176) rgb255(8cm)=(127,191,123)}
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32)
+%rgb255(4cm)=(244,165,130) rgb255(8cm)=(5,113,176)}
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32) rgb255(4cm)=(60,60,60) rgb255(8cm)=(5,113,176)}
+/pgfplots/colormap={jet2}{rgb255(0cm)=(200,0,0) rgb255(1cm)=(200,200,0) rgb255(2cm)=(100,200,100) rgb255(3cm)=(0,200,200) rgb255(4cm)=(0,100,200)}
+}
+
+%\pgfplotsset{
+%    % this transformation ensures that every input argument is
+%    % transformed from -0.2 : 0.5 -> -0.5,0.5 
+%    % and every tick label is transformed back:
+%    nonlinear colormap trafo/.code 2 args={
+%        \def\nonlinearscalefactor{((#2)/(#1))}%
+%        \pgfkeysalso{%
+%            y coord trafo/.code={%
+%                \pgfmathparse{##1 < 0 ? -1*##1*\nonlinearscalefactor : ##1}%
+%            },
+%            y coord inv trafo/.code={%
+%                \pgfmathparse{##1 < 0 ? -1*##1/\nonlinearscalefactor : ##1}%
+%            },
+%        }%
+%    },
+%    nonlinear colormap around 0/.code 2 args={
+%        \def\nonlinearscalefactor{((#2)/(#1))}%
+%        \pgfkeysalso{
+%            colorbar style={
+%                nonlinear colormap trafo={#1}{#2},
+%                %
+%                % OVERRIDE this here. The value is *only* used to
+%                % generate a nice axis, it does not affect the data.
+%                % Note that these values will be mapped through the
+%                % colormap trafo as defined above.
+%                point meta min={#1},
+%                point meta max={#2},
+%            },
+%            %
+%            % this here is how point meta is computed for the plot.
+%            % It means that a point meta of -0.2 will actually become -0.5
+%            % Thus, the *real* point meta min is -0.5... but we
+%            % override it above.
+%            point meta={y < 0 ? -y*\nonlinearscalefactor : y},
+%        }%
+%    },
+%}
+
+\iffalse
+\pgfplotsset{
+/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32) rgb255(1cm)=(198,82,120) 
+rgb255(3cm)=(194,165,207) rgb255(5cm)=(131,147,196) rgb255(7cm)=(68,130,186) rgb255(8cm)=(5,113,176)}
+}
+\fi
+
+\makeatletter
+\pgfplotsset{
+	my filter/.style args={every#1between#2and#3}{%
+		/pgfplots/x filter/.append code={%
+			\ifnum\coordindex<#2%
+			% Nothing
+			\else% Did we pass #3?
+			\ifnum\coordindex>#3%
+			%Nothing
+			\else% Ok filter is on, don't disturb \pgfmathresult for convenience
+			\pgfmathsetmacro\temp{int(mod(\coordindex,#1))}%
+			\ifnum0=\temp\relax% Are we on the nth point?
+			% Yes do nothing let it pass
+			\else% discard it
+			\let\pgfmathresult\pgfutil@empty
+			\fi%
+			\fi%
+			\fi%
+}}}
+\makeatother
+
+\pgfplotsset{
+	compat=newest,
+	legend image code/.code={
+		\draw[mark repeat=2,mark phase=2]
+		plot coordinates {
+			(0cm,0cm)
+			(0.3cm,0cm)        %% default is (0.3cm,0cm)
+			(0.6cm,0cm)         %% default is (0.6cm,0cm)
+		};%
+	}
+}
+
+\definecolor{myred}{RGB}{200,0,0}
+\definecolor{myorange}{RGB}{250,150,100}
+\definecolor{myviolet}{RGB}{194,165,207}
+\definecolor{mycyan}{RGB}{146,197,222}
+\definecolor{myblue}{RGB}{0,100,200}
+\definecolor{mygreen}{RGB}{100,200,100}
+\definecolor{mytile}{RGB}{27,120,55}
+\definecolor{myblack}{RGB}{60,60,60}
+
+%\definecolor{myblue}{HTML}{0070C0}
+%\definecolor{myred}{HTML}{C00000}
+%\definecolor{mypurple}{HTML}{7030A0}
+%\definecolor{mygreen}{HTML}{00B050}
+
+\pgfdeclareplotmark{mygridmark}
+{%
+%	\path[fill=mapped color] (-\pgfplotmarksize,-\pgfplotmarksize) rectangle (\pgfplotmarksize,1.3023*\pgfplotmarksize);
+\path[fill=mapped color, fill opacity = 0.8, line width=0.2pt, color=mapped color] (-\pgfplotmarksize,-\pgfplotmarksize) rectangle (\pgfplotmarksize,20*\pgfplotmarksize);
+}
+
+
+\begin{document}
+	
+	\begin{tikzpicture}
+		\begin{axis}[
+		%%restrict x to domain=-86.168:-86.145,
+		%%ymax    = 39.781, % 2200m
+		%%ymin    = 39.761,
+		xmin = 40.4608, % 2070m
+		xmax = 40.4687,
+		width   = 4.5cm,
+		height  = 3.5cm,
+		scale only axis = true,
+		xtick align = inside,
+		%axis line style={draw=mygray},
+		%axis line style={draw=black},
+		axis line style={draw=none},
+		xtick style={draw=none},
+		ytick style={draw=none},
+			ytick={0, 30, 60, 90, 120},
+			yticklabels={0{\small m}, 30{\small m}, 60{\small m}, 90{\small m}, 120{\small m}},
+			%yticklabels={0m, 30m, 60m, 90m, 120m},
+			xtick={40.4608, 40.46255,40.4643,40.46605,40.4678},
+			xticklabels={0m, 200m, 400m, 600m, 800m},
+			%ylabel = {Altitude (m)},
+		xlabel={Location grids along R1},
+		xlabel style={
+                        %font=\normalsize,
+                        %xshift=-10pt,
+                        yshift =5pt,
+                    },
+		ylabel = {},
+		    ylabel style={
+                        font=\normalsize,
+                        %xshift=-10pt,
+                        yshift =-10pt,
+                    },
+		    yticklabel style={
+                        	font=\normalsize,
+                        	align=right,
+        		        	rotate=-90,
+        			xshift= -2mm,
+        			yshift = 1.5mm,
+                    },
+                    xticklabel style={
+        			%font=\small,
+        			align=center,
+        			xshift= 0pt,
+        			yshift = 10pt,
+    		},
+		%%ticks=none,
+		colorbar,
+		%nonlinear colormap around 0={0.5}{1},
+		colormap/jet2,
+		%colormap={whiteblue}{color=(white) color=(mygray) color=(120,120,250) color=(blue)},
+		%colormap={whiteblue}{color=(white) color=(mygray2) color=(blue)},
+           	% colormap={gb}{color=(240, 240, 240) color=(white) color=(green)},
+		%%colormap={gray2black}{
+			%%rgb255=(250, 250, 250)
+			%%rgb255=(0,0,255)
+		%%},
+%	colormap={wbb}{
+%		color(0)=(white)
+%		color(900)=(blue)
+%		color(1000)=(rgb:red,11;green,11;blue,69)
+%	},
+%	colormap/hot2,
+		%colormap/gray2black,
+		%colormap/whiteblue,
+		%%colorbar horizontal,
+		colorbar style={
+			%ytick={0.5,0.75,1,1.25,1.5,1.75},
+			%yticklabels={50,75,90,95,99,100},
+%			ytick={0,0.25,0.5,0.75,1},
+%			yticklabels={0,25,50,75,100},
+			ytick={-120, -110, -100, -90, -80},
+			yticklabels={-120, -110, -100, -90, -80},
+			%yticklabels={0,25,50,75,100},
+%			ytick={0,0.1,0.2,0.3,0.4,0.5},
+%			yticklabels={0,10,20,30,40,50},
+			%%xticklabels={},
+			%xticklabels={},
+			%%xlabel={Duration Ratio},
+			%				yticklabel style={text width=0.1cm,}
+			%at={(0.05,0.18)},
+			%%SSat={(0.05,0.9)},
+			%%ymin=0,
+			%%ymax=1,
+			%anchor=north,
+			%%height=0 cm,
+			%%height=0.1cm,
+			height=3.2cm,
+			xshift= -2mm,
+			yshift= 1mm,
+			width=0.2cm,
+			fill opacity=0.8, 
+			tick label style={opacity=1,xshift= -3pt}
+		}
+	]
+		
+			\addplot[
+			only marks,
+			mark=mygridmark,
+			mark size=0.83pt,
+			scatter,
+			scatter src=explicit,
+			point meta=explicit,
+			point meta max = -80,
+			point meta min = -120,
+			]
+			%		file {data.dat};
+			table[
+			y = height,
+			x = grid_lon,
+			meta = thput_50,
+			col sep=comma,
+			]
+			{nr_serving_rsrp_0.0001_r1.csv};
+			%{A-R1_connectivity_ratio_pixel5_0405-1009_310410_0.0005_0_0_0.95_0.05_grid_passed_5gm.csv};
+			%{A-R1_connectivity_ratio_pixel5_0405-0930_310410_0.0005_0_0_0.95_0.05_grid_passed_5gm.csv};
+			%{A-R1_connectivity_ratio_pixel5_0407_0807_310410_0.0005_0_0_0.95_0.05_grid_passed_5gm.csv};
+			% {A-R1_connectivity_ratio_pixel5_0407_0807_310410_0.0005_0_0_area_type_matched_10_10_5gm.csv};
+% R1: 39.761	39.781	-86.168	-86.145
+% 1.97km x 2.22km
+			%\pgfplotsextra{
+				%				%subregion2 R1B
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.166,39.7725) to (axis cs:-86.166,39.7665);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.166,39.7665) to (axis cs:-86.161,39.7665);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.161,39.7665) to (axis cs:-86.161,39.761);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.161,39.761) to (axis cs:-86.154,39.761);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.154,39.761) to (axis cs:-86.154,39.7665);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.154,39.7665) to (axis cs:-86.149,39.7665);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.149,39.7665) to (axis cs:-86.149,39.7705);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.149,39.7705) to (axis cs:-86.151,39.7705);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.151,39.7705) to (axis cs:-86.151,39.7725);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.151,39.7725) to (axis cs:-86.15,39.7725) ;
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.15,39.7725) to (axis cs:-86.15,39.775);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.15,39.775) to (axis cs:-86.157,39.775);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.157,39.775) to (axis cs:-86.157,39.7725);
+%				\draw[line width=0.3mm, subregioncolor2,-,>=latex] (axis cs:-86.157,39.7725) to (axis cs:-86.166,39.7725);
+%				%\node[text=subregioncolor2] at (axis cs:-86.164,39.768) {R1B};
+% R1A				%\node[text=subregioncolor1] at (axis cs:-86.164,39.775) {R1A};
+				%}
+	
+\end{axis}
+%	\pgfresetboundingbox
+%	\path
+%	(current axis.south west) -- ++(-0in,-0in)
+%	rectangle (current axis.north east) -- ++(0in,0in);
+	\end{tikzpicture}
+	
+\end{document}
