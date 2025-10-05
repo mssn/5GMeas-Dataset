@@ -1,0 +1,636 @@
+  % Version: 1.0  2017-03-08 init version
+% Note: to use package fontspec,
+% use XeLaTeX to compile
+
+% v2: backup on 02/10/2025
+% v3: chunyi, 02/10/2025, revised for submission 
+
+
+\documentclass{article}
+\usepackage{siunitx}
+% \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+%\usepackage{verbatim}
+%\usepackage{sansmath}
+\usepackage{blindtext}
+\usepackage[active,tightpage]{preview}
+%\usepgfplotslibrary{statistics}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+%\usetikzlibrary{pgfplots.statistics}
+\usetikzlibrary{plotmarks}
+
+\pgfplotsset{compat=newest}
+
+%\usepackage{fontspec}
+%\setmainfont[
+%BoldFont={Arial Bold},
+%ItalicFont={Arial Italic},
+%BoldItalicFont={Arial Bold Italic}
+%]{Arial}
+
+
+\makeatletter
+\pgfplotsset{
+my filter/.style args={every#1between#2and#3}{%
+/pgfplots/x filter/.append code={%
+\ifnum\coordindex<#2%
+  % Nothing
+\else% Did we pass #3?
+  \ifnum\coordindex>#3%
+    %Nothing
+  \else% Ok filter is on, don't disturb \pgfmathresult for convenience
+    \pgfmathsetmacro\temp{int(mod(\coordindex,#1))}%
+    \ifnum0=\temp\relax% Are we on the nth point?
+      % Yes do nothing let it pass
+    \else% discard it
+      \let\pgfmathresult\pgfutil@empty
+    \fi%
+  \fi%
+\fi%
+}}}
+\makeatother
+
+\pgfplotsset{xtick style={draw=none}}
+
+\usepgfplotslibrary{statistics}
+\makeatletter
+\pgfplotsset{
+	boxplot prepared from table/.code={
+		\def\tikz@plot@handler{\pgfplotsplothandlerboxplotprepared}%
+		\pgfplotsset{
+			/pgfplots/boxplot prepared from table/.cd,
+			#1,
+		}
+	},
+	/pgfplots/boxplot prepared from table/.cd,
+	table/.code={\pgfplotstablecopy{#1}\to\boxplot@datatable},
+	row/.initial=0,
+	make style readable from table/.style={
+		#1/.code={
+			\pgfplotstablegetelem{\pgfkeysvalueof{/pgfplots/boxplot prepared from table/row}}{##1}\of\boxplot@datatable
+			\pgfplotsset{boxplot/#1/.expand once={\pgfplotsretval}}
+		}
+	},
+make style readable from table=draw position,
+	make style readable from table=lower whisker,
+	make style readable from table=upper whisker,
+	make style readable from table=lower quartile,
+	make style readable from table=upper quartile,
+	make style readable from table=median,
+	make style readable from table=lower notch,
+	make style readable from table=upper notch
+}
+\makeatother
+
+\makeatletter
+\pgfplotsset{% basis: example on p. 262 of the pgfplots manual
+	/pgfplots/area legend/.style={
+		/pgfplots/legend image code/.code={
+			\draw[#1] (0cm,0.15em) rectangle (0.6*\pgfplotbarwidth,-0.15em);
+		}, },
+}
+\makeatother
+
+%\definecolor{myred}{RGB}{202,0,32}
+%\definecolor{myorange}{RGB}{244,165,130}
+%\definecolor{myviolet}{RGB}{194,165,207}
+%\definecolor{mycyan}{RGB}{146,197,222}
+%\definecolor{myblue}{RGB}{5,113,176}
+%\definecolor{mygreen}{RGB}{127,191,123}
+%\definecolor{mytile}{RGB}{27,120,55}
+%\definecolor{myblack}{RGB}{60,60,60}
+% \definecolor{palette3}{RGB}{247,247,247}
+
+\definecolor{cs2red}{HTML}{c82423}
+\definecolor{cs2pink}{HTML}{ff8884}
+\definecolor{cs2orange}{HTML}{f8ac8c}
+\definecolor{cs2blue}{HTML}{2878b5}
+\definecolor{cs2bluelight}{HTML}{9ac9db}
+
+
+\definecolor{myred}{HTML}{c82423}%C00000}
+\definecolor{mypurple}{HTML}{7030A0}
+\definecolor{myblue}{HTML}{0070C0}
+\definecolor{myblue2}{HTML}{0431FF}
+\definecolor{myblue0}{HTML}{2878b5}%{0000FF}
+\definecolor{mygreen}{HTML}{00B050}
+\definecolor{mygray}{HTML}{A6A6A6}
+
+
+
+\begin{document}
+
+\pgfplotstableread[col sep = comma]{example_2_t-p9-dl-repeated-1-new.csv}\tablethput
+%\pgfplotstableread[col sep = comma]{example_1_rss_data_t-uldl-both-campus-3_lte.csv}\tablethputlte
+%\pgfplotstableread[col sep = comma]{example_1_rss_data_t-uldl-both-campus-3_idle.csv}\tablethputidle
+
+%0	0.8	OFF
+%0.9	25.1	ON
+%25.2	40.3	OFF
+%40.4	162	ON
+%162.1	177.1	OFF
+%177.2	224.1	ON
+%224.2	239.2	OFF
+%239.3	254.1	ON
+%254.2	270.5	OFF
+%270.6	284.2	ON
+%284.3	296.3	OFF
+%296.4	308.6	ON
+%308.7	324.3	OFF
+%324.4	366.6	ON
+%366.7	381	OFF
+%381.1	396.5	ON
+%396.6	410.2	OFF
+%410.3	434.6	ON
+%434.7	450.6	OFF
+%450.7	463.9	ON
+%464	492.5	OFF
+%492.6	519.6	ON
+%519.7	535.7	OFF
+%535.8	555.6	ON
+
+%0	0.8	OFF
+%25.2	40.3	OFF
+%162.1	177.1	OFF
+%224.2	239.2	OFF
+%254.2	270.5	OFF
+%284.3	296.3	OFF
+%308.7	324.3	OFF
+%366.7	381	OFF
+%396.6	410.2	OFF
+%434.7	450.6	OFF
+%464	492.5	OFF
+%519.7	535.7	OFF
+
+% on/off from YB
+%0
+%25.1
+%36.7
+%162
+%173.2 % 4
+%224.1
+%235.5
+%254.6
+%266.6
+%284.2
+%292.1
+%308.6
+%320
+%366.6
+%377.7
+%396.5
+%406
+%434.6
+%447.2
+%463.9
+%488.6
+%519.6
+%533
+%561.8
+%574.2
+%587
+%599.3
+%648.8
+%660.5
+
+
+\begin{tikzpicture}
+%\pgfkeys{
+%	/pgf/number format/precision=2, 
+%	/pgf/number format/fixed zerofill=true,
+%	/pgf/number format/fixed
+%}
+
+\begin{axis}[
+    % my filter=every 100 between 0 and 18000,
+    % ybar,
+    %name=plot1,
+   % clip=false,
+    boxplot/draw direction=y,
+%    grid style={line width=.1pt, draw=gray!10},
+%    major grid style={line width=.3pt,draw=gray!50},
+    %	grid style={line width=.1pt, draw=gray!10},major grid style={line width=.2pt,draw=gray!50},
+	grid=both,
+	grid style={thin, draw=gray!10},
+	major grid style={line width=.3pt,,draw=gray!80},
+	minor x tick num={5},
+	minor y tick num={3},
+	minor tick length=0pt,
+   %grid=major,
+   %minor tick num= 2,
+   %xmajorgrids={true},
+    %box plot width=0.5em,
+    %axis y,
+    %axis y line*=left,
+    %axis x line*=middle,
+    %y dir=reverse,
+    % box plot width=0.5em,
+    %axis y line*=left,
+    %axis x line*=top, %middle,
+    width   = 6.5 cm,
+    height  = 2.1 cm,% 1.5 cm
+    % w:h: 14cm vs 4cm (single column
+    % w:h: 7cm vs 4cm (1/2 column)
+% example 1
+%    ymax    = 240,
+%    ymin    = -240,
+	xmin=0,
+	xmax=435,	
+%    ytick={0, 100, 200},
+%    yticklabels={0,100, 200},
+  	 ymax= 400,
+   	ymin= 0,	
+%    ytick={0, 200, 400},
+%    yticklabels={0, 200,400},
+    ytick align = inside, %outside,
+    ytick={0, 100, 200, 300, 400, 500},
+    yticklabels={0, 100, 200, 300, 400, 500},
+   	 xtick pos=left,
+%	 xtick={0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300}, % manually adjust xtick
+%	  xticklabels={0s, 30s, 60s, 90s, 120s, 150s, 180s, 210s, 240s, 270s, 300s}, % manually adjust xtick
+	 xtick={0,  60, 120,  180, 240,  300, 360, 420, 480, 540, 600}, % manually adjust xtick
+%	  xticklabels={0s,  60s, 120s,  180s, 240s,  300s, 360s, 420s, 480s, 540s, 600s}, % manually adjust xtick
+	 % xtick={0,  120,  240,  360, 480, 600}, % manually adjust xtick
+	  %xticklabels={0s,  120s,  240s,  360s, 480s, 600s}, % manually adjust xtick
+	 xticklabels={0s, 60s, 120s, 180s, 240s, 300s, 360s, 420s, 480s}, % manually adjust xtick
+	 %xticklabels ={0s, 60s, 120s, 180s, 240s, 300s},
+	 x grid on,
+    scale only axis = true,
+    xtick align = outside,
+    %inside,
+    tick label style={/pgf/number format/assume math mode=true},
+    xticklabel style = {
+    	%font=\normalsize,
+	yshift = 7 pt,
+        %xshift =  -5 pt,
+    },
+    yticklabel style = {
+    %font=\normalsize,
+   	yshift =  0 pt,
+        xshift =  3 pt,
+    },
+    %xticklabel style={yshift=3ex, anchor=south},
+    %xticklabels={},
+    % % xticklabel pos=right,
+    % xtick pos = left,
+    % ytick pos = left,
+    % % yticklabel pos=right,
+    % % enlargelimits=0.15,
+    ylabel={Download Speed \\ (Mbps)},
+    ylabel style={
+        %font=\small,
+        align=center,
+        textwidth=2.15cm,
+        yshift =  -7pt,
+        xshift =  -2pt,
+    },
+    % xlabel={Location in static tests},
+%    xlabel style={
+%        font=\normalsize,
+%        at={(axis description cs:0.5,-0.1)},
+%        anchor=north,
+%        xshift = 0 pt,
+%    },
+    legend style={
+	 at      = {(1.04, 1.25)},
+%        legend entries = {Default runs, Customized runs},
+        font    = \small, % \normalsize,
+        fill    = none,
+        draw    = none,
+	%anchor  = south east,
+        legend cell align   = left,
+        legend columns      = 2,
+    },
+%clip=false
+    ]
+	
+%	\addplot[
+%	%only marks,
+%	%smooth,
+%	%every mark/.append style={solid,fill=white},
+%	% mark=star,
+%	%mark=none,
+%	%mark size=1pt,
+%	color       = myred,
+%	% draw opacity=0.7,
+%	line width  = 0.7pt,
+%	% line cap    = round,
+%	% line join   = round,
+%	%each nth point={1},
+%	%draw = red,
+%	%fill = red,
+%	]
+%	table[x=time_delta,y=actual_speed]      from \tablethputlte;
+	
+%	\addplot[
+%	%only marks,
+%	%smooth,
+%	%every mark/.append style={solid,fill=white},
+%	% mark=star,
+%	%mark=none,
+%	%mark size=1pt,
+%	color       = myred,
+%	% draw opacity=0.7,
+%	line width  = 0.7pt,
+%	% line cap    = round,
+%	% line join   = round,
+%	%each nth point={1},
+%	%draw = red,
+%	%fill = red,
+%	]
+%	table[x=relative_time,y=DL_Throughput]      from \tablethputidle;
+	
+	%\addplot+[mark size=3pt, color=mypurple, mark= diamond,line width=1pt] coordinates {(1,21)};
+	
+\iffalse
+	\draw [fill=myblue0,opacity = 0.05, line=none](0,0) rectangle (6,300);
+	%\node[mygreen] at (axis cs:3, 250) {\tiny \bf ON};
+	 
+        \draw [fill=myred,opacity = 0.1, line=none](6,0) rectangle (20.4,300);
+	\addplot+[mark=none, densely dashed,myred,line width=1pt] coordinates {(6,-1) (6,300)};
+	%\addplot+[mark size=4pt, color=mypurple, mark= x,line width=1pt] coordinates {(6,310)};
+	\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(6,280)};
+	%\node[myred,right] at (axis cs:3.5, 250) {\tiny OFF};
+	%\draw[dashed, line width = 1pt, myred] (6.5,275) -- (12.5,235);
+	\node[myred] at (axis cs:12.5, 250) {\tiny \bf OFF};
+	%\node[anchor=west, myred, left] (source) at (axis cs: 6.5, 290){};
+        %\node[myred] (destination) at (axis cs:12.5,200){\small OFF};
+        %\draw[->Stealth,myred, very thick](source)--(destination);
+
+	
+	\draw [fill=myblue0,opacity = 0.05, line=none](20.4,0) rectangle (30.1,300);
+	\addplot+[mark=none, densely dashed,myblue0,line width=1pt] coordinates {(20.4,-1) (20.4,300)};
+	\addplot+[mark size=3pt, color=myblue0,mark=diamond*,line width=1pt, solid] coordinates {(20.4,280)};
+	%\draw[dashed, line width = 1pt, mygreen]  (20.4,275) -- (26.4,235);
+	\node[myblue0] at (axis cs:25.4, 250) {\tiny \bf ON};
+	
+	\draw [fill=myred,opacity = 0.1, line=none](30.1,0) rectangle (44.2,300);
+	\addplot+[mark=none, densely dashed,myred,line width=1pt] coordinates {(30.1,-1) (30.1,300)};
+	%\addplot+[mark size=4pt, color=mypurple, mark= x,line width=1pt] coordinates {(30.1,310)};
+	\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(30.1,280)};
+	%\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(37,280)};
+	\node[myred] at (axis cs:38, 250) {\tiny \bf OFF};
+
+
+	\draw [fill=myblue0,opacity = 0.05, line=none](44.2,0) rectangle (88.2,300);
+	\addplot+[mark=none, densely dashed,myblue0,line width=1pt] coordinates {(44.2,-1) (44.2,300)};
+	%\addplot+[mark size=3pt, color=mypurple, mark= diamond,line width=1pt] coordinates {(44.2,310)};
+	\addplot+[mark size=3pt, color=myblue0,mark=diamond*,line width=1pt, solid] coordinates {(44.2,280)};
+	\node[myblue0] at (axis cs:50.2, 250) {\tiny \bf ON};
+
+	\draw [fill=myred,opacity = 0.1, line=none](88.2,0) rectangle (103.6,300);
+	\addplot+[mark=none, densely dashed,myred,line width=1pt] coordinates {(88.2,-1) (88.2,300)};
+	\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(88.2,280)};
+	\node[myred] at (axis cs:95.2, 250) {\tiny \bf OFF};
+	%\node[myred,right] at (axis cs:86, 250) {\tiny OFF};
+	%\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(193,280)};
+	%\node[myred,right] at (axis cs:183, 250) {\tiny OFF};
+
+
+	\draw [fill=myblue0,opacity = 0.05, line=none](103.6,0) rectangle (184.1,300);
+	%\addplot+[mark size=4pt, color=mypurple, mark= x,line width=1pt] coordinates {(88.2,310)};
+	\addplot+[mark=none, densely dashed,myblue0,line width=1pt] coordinates {(103.6,-1) (103.6,300)};
+	\addplot+[mark size=3pt, color=myblue0,mark=diamond*,line width=1pt, solid] coordinates {(103.6,280)};
+	\node[myblue0] at (axis cs:109.6, 250) {\tiny \bf ON};
+
+	\draw [fill=myred,opacity = 0.1, line=none](184.1,0) rectangle (201.9,300);
+	\addplot+[mark=none, densely dashed,myred,line width=1pt] coordinates {(184.1,-1) (184.1,300)};
+	\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(184.1,280)};
+	\node[myred] at (axis cs:190.1, 250) {\tiny \bf OFF};
+	
+	\draw [fill=myblue0,opacity = 0.05, line=none](201.9,0) rectangle (216.5,300);
+	\addplot+[mark=none, densely dashed,myblue0,line width=1pt] coordinates {(201.9,-1) (201.9,300)};
+	\addplot+[mark size=3pt, color=myblue0,mark=diamond*,line width=1pt, solid] coordinates {(201.9,280)};
+	\node[myblue0] at (axis cs:207.9, 250) {\tiny \bf ON};
+	
+	\draw [fill=myred,opacity = 0.1, line=none](216.5,0) rectangle (230.1,300);
+	\addplot+[mark=none, densely dashed,myred,line width=1pt] coordinates {(216.5,-1) (216.5,300)};
+	\addplot+[mark size=4pt, color=myred, mark= x,line width=1pt] coordinates {(216.5,280)};
+	\node[myred] at (axis cs:222.5, 250) {\tiny \bf OFF};
+	
+	\draw [fill=myblue0,opacity = 0.05, line=none](230.1.9,0) rectangle (270,300);
+	\addplot+[mark=none, densely dashed,myblue0,line width=1pt] coordinates {(230.1,-1) (230.1,300)};
+	\addplot+[mark size=3pt, color=myblue0,mark=diamond*,line width=1pt, solid] coordinates {(230.1,280)};
+	\node[myblue0] at (axis cs:237.1, 250) {\tiny \bf ON};
+\fi	
+
+%0	0.8	OFF
+%25.2	40.3	OFF
+%162.1	177.1	OFF
+%224.2	239.2	OFF
+%254.2	270.5	OFF
+%284.3	296.3	OFF
+%308.7	324.3	OFF
+%366.7	381	OFF
+%396.6	410.2	OFF
+%434.7	450.6	OFF
+%464	492.5	OFF
+%519.7	535.7	OFF
+
+
+		
+	\addplot[
+	%only marks,
+	%smooth,
+	%every mark/.append style={solid,fill=white},
+	% mark=star,
+	%mark=none,
+	%mark size=1pt,
+	color       =myblue,%black,
+	%mygray, 
+	%myblue0,
+	% draw opacity=0.7,
+	line width  = 0.75pt, 
+	% 0.5pt,
+	% line cap    = round,
+	% line join   = round,
+	%each nth point={1},
+	%draw = red,
+	%fill = red,
+	fill=myblue,
+	%black, 
+	fill opacity=0.25,
+	]
+	%table[x=time_delta,y=actual_speed]      from \tablethput;
+	table[x=time_delta,y=DL_Throughput]     from \tablethput  \closedcycle;
+	%\addlegendentry{FPS}
+		
+%	\node[myred,right] at (axis cs:220, 6) {\bf 4 times 5G};
+%	\node[myred,right] at (axis cs: 222,2) {\bf on-and-off};  
+	
+%	\draw[myred,->,line width=0.5pt]  (axis cs:223,1.8) -- (axis cs: 203,0.2);
+	
+	%\draw[myred, dashed, thick] (axis cs:20.8, 0) circle[radius=15];
+%	\draw[myred, dashed, thick] (axis cs:21.5, 0) ellipse[x radius=12, y radius=1];
+%	\draw[myred, dashed, thick] (axis cs:73.5, 0) ellipse[x radius=12, y radius=1];
+%	\draw[myred, dashed, thick] (axis cs:137.5, 0) ellipse[x radius=12, y radius=1];
+%	\draw[myred, dashed, thick] (axis cs:190.3, 0) ellipse[x radius=12, y radius=1];
+	
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(10.6,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(38.3,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(95.6,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(157.8,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(188.6,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(216.2,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(242.3,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(300.2,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(329.3,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(368.9,380)};
+	\addplot+[mark size=2.5pt, color=myred, mark= x,line width=1pt] coordinates {(404.3,380)};
+	
+	%\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](0,0) rectangle (0.8,400); 
+	%\node[myred,rotate=270] at (axis cs:237.1, 250) {\tiny \bf 5G OFF};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](5.2,0) rectangle (15.9,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(5.2,-1) (5.2,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(15.9,-1) (15.9,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](32.9,0) rectangle (43.7,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(32.9,-1) (32.9,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(43.7,-1) (43.7,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](90,0) rectangle (101.2,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(90,-1) (90,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(101.2,-1) (101.2,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](152.1,0) rectangle (163.5,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(152.1,-1) (152.1,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(163.5,-1) (163.5,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](182.6,0) rectangle (194.6,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(182.6,-1) (182.6,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(194.6,-1) (194.6,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](212.2,0) rectangle (220.1,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(212.2,-1) (212.2,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(220.1,-1) (220.1,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](236.6,0) rectangle (248,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(236.6,-1) (236.6,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(248,-1) (248,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](294.6,0) rectangle (305.7,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(294.6,-1) (294.6,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(305.7,-1) (305.7,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](324.5,0) rectangle (334,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(324.5,-1) (324.5,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(334,-1) (334,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](362.6,0) rectangle (375.2,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(362.6,-1) (362.6,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(375.2,-1) (375.2,500)};
+	\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](391.9,0) rectangle (416.6,400); 
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(391.9,-1) (391.9,500)};
+		\addplot+[mark=none, dashed,myred,line width=0.35pt] coordinates {(416.6,-1) (416.6,500)};
+	
+	%\legend{Speed (5G ON), 5G OFF}
+	%\legend{Download Speed (5G ON), 5G OFF}
+	%\legend{\textcolor{myblue}{Download Speed} \colorbox{myred!10}{\textcolor{myred}{\small $\mathbf{\times}$: {5G OFF} (0~Mbps)}} }
+	\legend{\textcolor{myblue}{Download Speed} \textcolor{myred}{[{$\mathbf{\times}$}: {5G OFF} (0~Mbps)]}}
+	%\draw [fill=myred,opacity = 0.1, line=0.0pt, myred, densely dashed](axis cs:0,1.2) rectangle (axis cs:0.2,1.25);
+	%\node[myred,rotate=0] at (axis cs:500, 550) {\tiny \bf 5G OFF};
+	
+
+
+\end{axis}
+
+%\begin{axis}[
+%    axis y line*=right,
+%    axis x line=none,
+%    grid style={line width=.1pt, draw=gray!10},major grid style={line width=.2pt,draw=gray!50},
+%    minor tick num=2,
+%    %box plot width=0.5em,
+%    %axis y,
+%    %axis y line*=left,
+%    %axis x line*=middle,
+%    %y dir=reverse,
+%    % box plot width=0.5em,
+%    %axis y line*=left,
+%    %axis x line*=top, %middle,
+%    width   = 9 cm,
+%    height  =2.8 cm,% 1.5 cm
+%    % w:h: 14cm vs 4cm (single column
+%    % w:h: 7cm vs 4cm (1/2 column)
+%% example 1
+%%    ymax    = 240,
+%%    ymin    = -240,
+%	xmin=0,
+%	xmax=300,	
+%%    ytick={0, 100, 200},
+%%    yticklabels={0,100, 200},
+%   ymax= 31,
+%   ymin= -1,	
+%%    ytick={0, 200, 400},
+%%    yticklabels={0, 200,400},
+%    ytick={0, 10, 20, 30},
+%    yticklabels={0, 10, 20, 30},
+%     xtick pos=left,
+%%    xtick={0,10, 20, 30},
+%%    xticklabels ={0s,10s, 20s, 30s},
+%    xtick={}, % manually adjust xtick
+%    xticklabels ={},
+%    scale only axis = true,
+%    xtick align = inside,
+%    tick label style={/pgf/number format/assume math mode=true},
+%    xticklabel style = {
+%    	%font=\normalsize,
+%	yshift =  2 pt,
+%        xshift =  -5 pt,
+%    },
+%    yticklabel style = {
+%    %font=\normalsize,
+%   	yshift =  0 pt,
+%        xshift =  -3 pt,
+%    },
+%    %xticklabel style={yshift=3ex, anchor=south},
+%    %xticklabels={},
+%    % % xticklabel pos=right,
+%    % xtick pos = left,
+%    % ytick pos = left,
+%    % % yticklabel pos=right,
+%    % % enlargelimits=0.15,
+%    ylabel={Bitrate (Mbps)},
+%    ylabel style={
+%        %font=\normalsize,
+%        yshift =  7pt,
+%        xshift =  0 pt,
+%    },
+%    % xlabel={Location in static tests},
+%%    xlabel style={
+%%        font=\normalsize,
+%%        at={(axis description cs:0.5,-0.1)},
+%%        anchor=north,
+%%        xshift = 0 pt,
+%%    },
+%    legend style={
+%	 at      = {(1, 1)},
+%%        legend entries = {Default runs, Customized runs},
+%        font    = \small, % \normalsize,
+%        fill    = none,
+%        draw    = none,
+%%        anchor  = south east,
+%        legend cell align   = left,
+%        legend columns      = 1,
+%    },
+%%clip=false
+%    ]
+%    
+%\addplot[
+%	%only marks,
+%	%smooth,
+%	%every mark/.append style={solid,fill=white},
+%	% mark=star,
+%	%mark=none,
+%	%mark size=1pt,
+%	color       = myred,
+%	% draw opacity=0.7,
+%	line width  = 0.7pt,
+%	% line cap    = round,
+%	% line join   = round,
+%	%each nth point={1},
+%	%draw = red,
+%	%fill = red,
+%	]
+%	table[x=time_delta,y=instant_bitrate]      from \tablethput;
+%	\addlegendentry{Bitrate}
+%
+%\end{axis}
+
+\end{tikzpicture}
+
+
+\end{document}

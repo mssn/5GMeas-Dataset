@@ -3,10 +3,10 @@
 #
 ###############################################################################
 
-This README is used to introduce our datasets and source codes used by our HotMobile'24 work: 
+This README is used to introduce our datasets and source codes used by our IWQoS'24 work: 
 “The Sky is Not the Limit: Unveiling Operational 5G Potentials in the Sky”.
 
-If you use our datasets and/or codes in your publication, please cite our HotMobile'24 paper, 
+If you use our datasets and/or codes in your publication, please cite our IWQoS'24 paper, 
 @inproceedings{liu2024sky,
   title={The Sky is Not the Limit: Unveiling Operational 5G Potentials in the Sky},
   author={Liu, Yanbing and Huang, Jingqi, and Peng, Chunyi},

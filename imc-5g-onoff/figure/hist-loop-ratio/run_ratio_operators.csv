@@ -1,0 +1,4 @@
+area_name,index,run_num,no_loop,tem_loop,endless_loop,no_loop_ratio,tem_loop_ratio,endless_loop_ratio
+T,1,594,304,8,282,0.512,0.013,0.475
+A,2,92,45,6,41,0.489,0.065,0.446
+V,3,141,68,5,68,0.482,0.035,0.482

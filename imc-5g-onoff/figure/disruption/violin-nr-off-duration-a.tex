@@ -1,0 +1,204 @@
+\documentclass{article}
+
+\usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+%\pgfplotsset{width=\textwidth,compat=1.18}
+\usepgfplotslibrary{statistics}
+\usepackage{tikzviolinplots}
+\usepgfplotslibrary{external}
+\tikzexternalize
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{decorations.text}
+\usetikzlibrary{decorations.pathmorphing}
+\usepackage{minted}
+\usemintedstyle{gruvbox-light}
+\usepackage{scontents}
+\usepackage{wasysym}
+\usepackage{microtype}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\definecolor{myred}{HTML}{C00000}
+\definecolor{mypurple}{HTML}{7030A0}
+\definecolor{myblue}{HTML}{0070C0}
+\definecolor{myblue2}{HTML}{0431FF}
+\definecolor{myblue0}{HTML}{0000FF}
+\definecolor{mygreen}{HTML}{00B050}
+\definecolor{mygray}{HTML}{A6A6A6}
+
+\definecolor{tm}{HTML}{E20074}
+\definecolor{att}{HTML}{067AB4}
+\definecolor{ver}{HTML}{7030A0}
+
+\begin{document}
+\fontsize{14}{12}\selectfont
+%\pgfplotsset{height=6.9cm,width=4.5cm}
+%\pgfplotsset{height=5cm,width=4.5cm}
+%\pgfplotsset{height=5.5cm,width=8cm}
+\pgfplotsset{height=5.5cm,width=7cm}
+\begin{tikzpicture}
+			\violinsetoptions[
+				%averages,
+				data points,
+				scaled,
+				%reverse axis,
+			]{
+				xmin=0,xmax=8,
+				ymin=-0.5,ymax=3,
+%				ylabel style={
+%					xshift = {-2*height("a")}
+%				},
+				ymajorgrids=true,
+				%xlabel={},
+				ylabel={OFF (s)},
+				ytick={0,1,2,3},
+        				yticklabels={$10^{0}$,$10^{1}$,$10^{2}$,$10^{3}$},
+				%minor x tick num=4,
+				yticklabel style={
+        				xshift = 3pt,
+    				},
+				ylabel style={
+        				yshift = -6pt,
+				xshift = -3pt
+    				},
+			}
+			\violinplot[%
+				color= att,
+				average color = att,
+				dataset color = att,
+				relative position = 1,
+				index=value_log,
+				label = {N1E1},
+				col sep=comma,
+				dataset size=0.5pt,
+				dataset mark=*,
+				dataset fill=att,
+				dataset fill opacity=1.0,
+				average mark=x,
+				average size=3pt,
+			]{nr_off_duration_cdf-a-N1E1.csv}
+			\violinplot[%
+				color= att,
+				average color = att,
+				dataset color = att,
+				relative position = 3,
+				index=value_log,
+				label = {N1E2},
+				col sep=comma,
+				dataset size=0.5pt,
+				dataset mark=*,
+				dataset fill=att,
+				dataset fill opacity=1.0,
+				average mark=x,
+				average size=3pt,
+			]{nr_off_duration_cdf-a-N1E2.csv}
+			\violinplot[%
+				color= att,
+				average color = att,
+				dataset color = att,
+				relative position = 5,
+				index=value_log,
+				label = {N2E1},
+				col sep=comma,
+				dataset size=0.5pt,
+				dataset mark=*,
+				dataset fill=att,
+				dataset fill opacity=1.0,
+				average mark=x,
+				average size=3pt,
+			]{nr_off_duration_cdf-a-N2E1.csv}
+			\violinplot[%
+				color= att,
+				average color = att,
+				dataset color = att,
+				relative position = 7,
+				index=value_log,
+				label = {N2E2},
+				col sep=comma,
+				dataset size=0.5pt,
+				dataset mark=*,
+				dataset fill=att,
+				dataset fill opacity=1.0,
+				average mark=x,
+				average size=3pt,
+			]{nr_off_duration_cdf-a-N2E2.csv}
+			
+%		\begin{axis}[
+%			xmin=0,xmax=8,
+%			ymin=0,ymax=10,
+%			]
+%			
+%		%\draw[mark=none,solid,black,line width=1pt] (0.54,1) -- (0.54,2);
+%		
+%		\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(0,2) (10,2)};
+%		\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(0,4) (10,4)};
+%		\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(0,6) (10,6)};
+%		\addplot+[mark=none, solid,black,line width=0.5pt] coordinates {(0,8) (10,8)};
+%		
+%		\draw(axis cs:0,1.65) node[node font=\normalsize, anchor=west] {\bf{0m}};
+%		\draw(axis cs:0,3.65) node[node font=\normalsize, anchor=west] {\bf{30m}};
+%		\draw(axis cs:0,5.65) node[node font=\normalsize, anchor=west] {\bf{60m}};
+%		\draw(axis cs:0,7.65) node[node font=\normalsize, anchor=west] {\bf{90m}};
+%		\draw(axis cs:0,9.65) node[node font=\normalsize, anchor=west] {\bf{120m}};
+%			
+%		\addplot+[mark=none, solid,gray,line width=1pt] coordinates {(0.54,0.5) (0.54,1.5)};
+%		\addplot+[mark=none, solid,mygreen,line width=1pt] coordinates {(3.23,2.6) (3.23,3.4)};
+%		\addplot+[mark=none, solid,myblue,line width=1pt] coordinates {(3.35,4.5) (3.35,5.5)};
+%		\addplot+[mark=none, solid,myorange,line width=1pt] coordinates {(2.81,6.5) (2.81,7.5)};
+%		\addplot+[mark=none, solid,myred,line width=1pt] coordinates {(2.88,8.5) (2.88,9.5)};
+%			
+%%		\draw(axis cs:8.5,1.5) node[node font=\normalsize, anchor=east] {\bf{5.4}};
+%%		\draw(axis cs:8.5,3) node[node font=\normalsize, anchor=east] {\bf{32.3}};
+%%		\draw(axis cs:8.5,4.5) node[node font=\normalsize, anchor=east] {\bf{33.5}};
+%%		\draw(axis cs:8.5,6) node[node font=\normalsize, anchor=east] {\bf{28.1}};
+%%		\draw(axis cs:8.5,7.5) node[node font=\normalsize, anchor=east] {\bf{28.8}};
+%		
+%%		\draw(axis cs:0.54,1.5) node[node font=\normalsize, anchor=west] {\bf{5.4}};
+%%		\draw(axis cs:3.23,3) node[node font=\normalsize, anchor=west] {\bf{32.3}};
+%%		\draw(axis cs:3.35,4.5) node[node font=\normalsize, anchor=west] {\bf{33.5}};
+%%		\draw(axis cs:2.81,6) node[node font=\normalsize, anchor=west] {\bf{28.1}};
+%%		\draw(axis cs:2.88,7.5) node[node font=\normalsize, anchor=west] {\bf{28.8}};
+%		
+%%		\draw(axis cs:2.54,1) node[node font=\normalsize, anchor=west] {\bf{5.4}};
+%%		\draw(axis cs:5.23,3) node[node font=\normalsize, anchor=west] {\bf{32.3}};
+%%		\draw(axis cs:5.35,5) node[node font=\normalsize, anchor=west] {\bf{33.5}};
+%%		\draw(axis cs:4.81,7) node[node font=\normalsize, anchor=west] {\bf{28.1}};
+%%		\draw(axis cs:4.88,9) node[node font=\normalsize, anchor=west] {\bf{28.8}};
+%		
+%		\draw(axis cs:5.1,0.5) node[node font=\normalsize, anchor=center, color=gray] {\textbf{(median)}};
+%		\draw(axis cs:5.1,1.25) node[node font=\normalsize, anchor=center, color=gray] {\textbf{5.4Mbps}};
+%		\draw(axis cs:5,2.25) node[node font=\normalsize, anchor=center, color=mygreen] {\bf{32.3Mbps}};
+%		\draw(axis cs:5,4.25) node[node font=\normalsize, anchor=center, color=myblue] {\bf{33.5Mbps}};
+%		\draw(axis cs:5,6.25) node[node font=\normalsize, anchor=center, color=myorange] {\bf{28.1Mbps}};
+%		\draw(axis cs:5,8.25) node[node font=\normalsize, anchor=center, color=myred] {\bf{28.8Mbps}};
+%		
+%%		\node[font=\normalsize, center, gray]at (axis cs: 15, 1.5) {\textbf{(median)}};
+%%\node[font=\normalsize, center, gray]at (axis cs: 15, 2.5) {\textbf{2.3Mbps}};
+%%\node[font=\normalsize, center,mygreen]at (axis cs: 15, 4.75) {{\bf 12.6Mbps}};
+%%\node[font=\normalsize, center,myblue]at (axis cs: 15,8.75) {{\bf 17.7Mbps}};
+%%\node[font=\normalsize, center,myorange]at (axis cs: 15,12.75) {{\bf 14.3Mbps}};
+%%\node[font=\normalsize, center,myred]at (axis cs: 15,16.75) {{\bf 14.5Mbps}};
+%		
+%%		\draw(axis cs:0.54,1) node[node font=\normalsize, anchor=west] {\bf{5.4}};
+%%		\draw(axis cs:3.23,3) node[node font=\normalsize, anchor=west] {\bf{32.3}};
+%%		\draw(axis cs:3.35,5) node[node font=\normalsize, anchor=west] {\bf{33.5}};
+%%		\draw(axis cs:2.81,7) node[node font=\normalsize, anchor=west] {\bf{28.1}};
+%%		\draw(axis cs:2.88,9) node[node font=\normalsize, anchor=west] {\bf{28.8}};
+%		
+%%		\draw(axis cs:8.5,1.5) node[node font=\normalsize, anchor=east, color=gray] {5.4};
+%%		\draw(axis cs:8.5,3) node[node font=\normalsize, anchor=east, color=mygreen] {32.3};
+%%		\draw(axis cs:8.5,4.5) node[node font=\normalsize, anchor=east, color=myblue] {33.5};
+%%		\draw(axis cs:8.5,6) node[node font=\normalsize, anchor=east, color=myorange] {28.1};
+%%		\draw(axis cs:8.5,7.5) node[node font=\normalsize, anchor=east, color=myred] {28.8};
+%			
+%		\end{axis}
+			
+		\end{tikzpicture}
+		
+\end{document}

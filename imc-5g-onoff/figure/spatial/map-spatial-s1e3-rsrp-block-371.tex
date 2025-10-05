@@ -1,0 +1,236 @@
+% Template for a CDF graph
+%
+% Author: Zengwen Yuan
+% Version: 1.0  2017-03-08 init version
+% Note: to use package fontspec,
+% use XeLaTeX to compile
+
+%%\documentclass{article}
+\documentclass{standalone}
+\usepackage{siunitx}
+% \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+%\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{helvet,etoolbox}
+%\usepackage{sansmath}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+
+\newlength\figureheight
+\newlength\figurewidth
+\setlength\figureheight{11cm}
+\setlength\figurewidth{10cm}
+
+\pgfplotsset{compat=newest}
+
+\pgfplotsset{
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(194,165,207) rgb255(2cm)=(202,0,32) 
+%rgb255(4cm)=(55,198,223) rgb255(6cm)=(5,113,176) rgb255(8cm)=(127,191,123)}
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32)
+%rgb255(4cm)=(244,165,130) rgb255(8cm)=(5,113,176)}
+%/pgfplots/colormap={jet2}{rgb255(0cm)=(202,0,32) rgb255(4cm)=(60,60,60) rgb255(8cm)=(5,113,176)}
+/pgfplots/colormap={jet2}{rgb255(0cm)=(200,0,0) rgb255(2.5cm)=(200,200,0) rgb255(4cm)=(100,200,100) rgb255(4.5cm)=(0,200,200) rgb255(5cm)=(0,100,200)}
+}
+
+%\pgfplotsset{
+%/pgfplots/colormap={jet3}{rgb255(0cm)=(255,255,255) rgb255(5cm)=(192,0,0)}
+%}
+
+\makeatletter
+\pgfplotsset{
+	my filter/.style args={every#1between#2and#3}{%
+		/pgfplots/x filter/.append code={%
+			\ifnum\coordindex<#2%
+			% Nothing
+			\else% Did we pass #3?
+			\ifnum\coordindex>#3%
+			%Nothing
+			\else% Ok filter is on, don't disturb \pgfmathresult for convenience
+			\pgfmathsetmacro\temp{int(mod(\coordindex,#1))}%
+			\ifnum0=\temp\relax% Are we on the nth point?
+			% Yes do nothing let it pass
+			\else% discard it
+			\let\pgfmathresult\pgfutil@empty
+			\fi%
+			\fi%
+			\fi%
+}}}
+\makeatother
+
+\pgfplotsset{
+	compat=newest,
+	legend image code/.code={
+		\draw[mark repeat=2,mark phase=2]
+		plot coordinates {
+			(0cm,0cm)
+			(0.3cm,0cm)        %% default is (0.3cm,0cm)
+			(0.6cm,0cm)         %% default is (0.6cm,0cm)
+		};%
+	}
+}
+
+\definecolor{myred}{HTML}{C00000}
+\definecolor{mypurple}{HTML}{7030A0}
+\definecolor{myblue}{HTML}{0070C0}
+\definecolor{myblue2}{HTML}{0431FF}
+\definecolor{myblue0}{HTML}{0000FF}
+\definecolor{mygreen}{HTML}{00B050}
+\definecolor{mygray}{HTML}{A6A6A6}
+
+\pgfdeclareplotmark{mygridmark}
+{
+\path[fill=mapped color, fill opacity = 0.8, line width=0.2pt, color=mapped color, draw=black] (-\pgfplotmarksize,-\pgfplotmarksize) rectangle (\pgfplotmarksize,\pgfplotmarksize);
+}
+
+
+\begin{document}
+	
+	\begin{tikzpicture}
+		\begin{axis}[
+		xmin = 1, 
+		xmax = 9,
+		width   = 3.9cm,
+		height  = 2.5cm,
+		scale only axis = true,
+		xtick align = inside,
+		axis line style={draw=none},
+		ytick style={draw=none},
+		xtick style={draw=none},
+			ytick={},
+			yticklabels={},
+			xtick={},
+			xticklabels={},
+		xlabel={},
+		xlabel style={
+                        yshift =5pt,
+                    },
+		ylabel = {},
+		    ylabel style={
+                        font=\normalsize,
+                        yshift =-10pt,
+                    },
+		    yticklabel style={
+                        	font=\normalsize,
+                        	align=right,
+        		        	rotate=-90,
+        			xshift=  -2mm,
+        			yshift = 2 pt,
+                    },
+                    xticklabel style={
+        			align=center,
+        			xshift= 0pt,
+        			yshift = 10pt,
+    		},
+		colorbar,
+		colormap/jet2,
+		colorbar style={
+			ytick={-120, -100, -80, -60},
+			yticklabels={-120, -100, -80, -60},
+			height=2.7cm,
+			xshift= -2mm,
+			yshift= 0mm,
+			width=0.2cm,
+			fill opacity=0.8, 
+			tick label style={opacity=1,xshift= -3pt}
+		}
+	]
+		
+			\addplot[
+			only marks,
+			mark=mygridmark,
+			mark size=1.33pt,
+			scatter,
+			scatter src=explicit,
+			point meta=explicit,
+			point meta max = -60,
+			point meta min = -120,
+			]
+			%		file {data.dat};
+			table[
+			x = {lon_index},
+      y = {lat_index},
+			meta = rsrp_50_371_387410,
+			col sep=comma,
+			]
+			{onoff_rss_subgrid_stats_spatial_s1e3_t_0.0005_0509_index_371.csv};
+			
+		\end{axis}
+		
+%		\begin{axis}[
+%		xmin = 0, 
+%		xmax = 14,
+%		width   = 4.375cm,
+%		height  = 2.5cm,
+%		scale only axis = true,
+%		xtick align = inside,
+%		axis line style={draw=none},
+%		ytick style={draw=none},
+%		xtick style={draw=none},
+%			ytick={},
+%			yticklabels={},
+%			xtick={},
+%			xticklabels={},
+%		xlabel={},
+%		xlabel style={
+%                        yshift =5pt,
+%                    },
+%		ylabel = {},
+%		    ylabel style={
+%                        font=\normalsize,
+%                        yshift =-10pt,
+%                    },
+%		    yticklabel style={
+%                        	font=\normalsize,
+%                        	align=right,
+%        		        	rotate=-90,
+%        			xshift=  -2mm,
+%        			yshift = 2 pt,
+%                    },
+%                    xticklabel style={
+%        			align=center,
+%        			xshift= 0pt,
+%        			yshift = 10pt,
+%    		},
+%		%colorbar,
+%		%colormap/jet3,
+%%		colorbar style={
+%%			ytick={0, 0.25, 0.5, 0.75, 1},
+%%			yticklabels={0\%,25\%,50\%,75\%,100\%},
+%%			height=2.7cm,
+%%			xshift= -2mm,
+%%			yshift= 0mm,
+%%			width=0.2cm,
+%%			fill opacity=0.8, 
+%%			tick label style={opacity=1,xshift= -3pt}
+%%		}
+%	]
+%			
+%			% Overlay labels (no meta)
+%    \addplot[
+%      only marks,
+%      scatter=false,
+%      nodes near coords,
+%      visualization depends on=\thisrow{run_with_onoff_ratio} \as \myvalue,
+%      every node near coord/.style={
+%        font=\scriptsize,
+%        text=black,
+%        anchor=center,
+%      },
+%      nodes near coords={\pgfmathprintnumber[fixed, precision=2]{\myvalue}},
+%    ]
+%    table[
+%      x = {lon_index},
+%      y = {lat_index},
+%      col sep=comma,
+%    ]{onoff_grid_stats_spatial_s1e3_t_0.0005_0509.csv};
+%			
+%		\end{axis}
+		
+		
+	\end{tikzpicture}
+	
+\end{document}

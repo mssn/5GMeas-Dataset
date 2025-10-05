@@ -1,0 +1,381 @@
+% Template for a CDF graph
+%
+% Author: Zengwen Yuan
+% Version: 1.0  2017-03-08 init version
+% Note: to use package fontspec,
+% use XeLaTeX to compile
+
+\documentclass{standalone}
+\usepackage{siunitx}
+% \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+%\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{helvet,etoolbox}
+%\usepackage{sansmath}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{1pt}
+\usetikzlibrary{patterns}
+\usetikzlibrary{pgfplots.statistics}
+
+\pgfplotsset{compat=newest}
+
+%\usepackage{fontspec}
+%\setmainfont[
+%BoldFont={Arial Bold},
+%ItalicFont={Arial Italic},
+%BoldItalicFont={Arial Bold Italic}
+%]{Arial}
+
+%\AtBeginEnvironment{tikzpicture}{\sansmath}
+%\AtEndEnvironment{tikzpicture}{\unsansmath}
+
+% # user-study-sync-overhead-context-tx-v2.txt
+%\pgfplotstableread{
+%0   0
+%1000   0.1
+%5000   0.8
+%10000   0.95
+%20000   1
+%}{\fakedata}
+
+\makeatletter
+\pgfplotsset{
+my filter/.style args={every#1between#2and#3}{%
+/pgfplots/x filter/.append code={%
+\ifnum\coordindex<#2%
+  % Nothing
+\else% Did we pass #3?
+  \ifnum\coordindex>#3%
+    %Nothing
+  \else% Ok filter is on, don't disturb \pgfmathresult for convenience
+    \pgfmathsetmacro\temp{int(mod(\coordindex,#1))}%
+    \ifnum0=\temp\relax% Are we on the nth point?
+      % Yes do nothing let it pass
+    \else% discard it
+      \let\pgfmathresult\pgfutil@empty
+    \fi%
+  \fi%
+\fi%
+}}}
+\makeatother
+
+
+
+\pgfplotsset{
+    compat=newest,
+    legend image code/.code={
+        \draw[mark repeat=2,mark phase=2]
+        plot coordinates {
+            (0cm,0cm)
+            (0.3cm,0cm)        %% default is (0.3cm,0cm)
+            (0.6cm,0cm)         %% default is (0.6cm,0cm)
+        };%
+    }
+}
+
+\pgfmathdeclarefunction{fpumod}{2}{%
+	\pgfmathfloatdivide{#1}{#2}%
+	\pgfmathfloatint{\pgfmathresult}%
+	\pgfmathfloatmultiply{\pgfmathresult}{#2}%
+	\pgfmathfloatsubtract{#1}{\pgfmathresult}%
+	% replaced `0' by `5' to make it work for this problem
+	\pgfmathfloatifapproxequalrel{\pgfmathresult}{#2}{\def\pgfmathresult{5}}{}%
+}
+
+\makeatletter
+\pgfplotsset{
+	boxplot prepared from table/.code={
+		\def\tikz@plot@handler{\pgfplotsplothandlerboxplotprepared}%
+		\pgfplotsset{
+			/pgfplots/boxplot prepared from table/.cd,
+			#1,
+		}
+	},
+	/pgfplots/boxplot prepared from table/.cd,
+	table/.code={\pgfplotstablecopy{#1}\to\boxplot@datatable},
+	row/.initial=0,
+	make style readable from table/.style={
+		#1/.code={
+			\pgfplotstablegetelem{\pgfkeysvalueof{/pgfplots/boxplot prepared from table/row}}{##1}\of\boxplot@datatable
+			\pgfplotsset{boxplot/#1/.expand once={\pgfplotsretval}}
+		}
+	},
+	make style readable from table=lower whisker,
+	make style readable from table=upper whisker,
+	make style readable from table=lower quartile,
+	make style readable from table=upper quartile,
+	make style readable from table=median,
+	make style readable from table=lower notch,
+	make style readable from table=upper notch,
+}
+\makeatother
+
+% \definecolor{palette1}{RGB}{215,25,28}
+% \definecolor{palette2}{RGB}{253,174,97}
+% % \definecolor{palette3}{RGB}{255,255,191}
+% \definecolor{palette3}{RGB}{208,28,139}
+% \definecolor{palette4}{RGB}{184,225,134}
+% % \definecolor{palette4}{RGB}{171,221,164}
+% \definecolor{palette5}{RGB}{43,131,186}
+% \definecolor{palette6}{RGB}{208,28,139}
+
+% green -- blueish
+% \definecolor{palette1}{RGB}{0,109,44}
+% \definecolor{palette2}{RGB}{44,162,95}
+% \definecolor{palette3}{RGB}{67,162,202}
+% \definecolor{palette4}{RGB}{8,104,172}
+% \definecolor{palette5}{RGB}{8,81,156}
+
+%\definecolor{myred}{RGB}{202,0,32}
+%\definecolor{myorange}{RGB}{244,165,130}
+%\definecolor{myviolet}{RGB}{194,165,207}
+%\definecolor{mycyan}{RGB}{146,197,222}
+%\definecolor{myblue}{RGB}{5,113,176}
+%\definecolor{mygreen}{RGB}{127,191,123}
+%\definecolor{mytile}{RGB}{27,120,55}
+%\definecolor{myblack}{RGB}{60,60,60}
+%% \definecolor{palette3}{RGB}{247,247,247}
+
+\definecolor{myred}{HTML}{C00000}
+\definecolor{mypurple}{HTML}{7030A0}
+\definecolor{myblue}{HTML}{0070C0}
+\definecolor{myblue2}{HTML}{0431FF}
+\definecolor{myblue0}{HTML}{0000FF}
+\definecolor{mygreen}{HTML}{00B050}
+\definecolor{mygray}{HTML}{A6A6A6}
+
+\definecolor{mypink}{HTML}{FF8884}
+% (255,136,132)
+
+
+% \documentclass{standalone}
+\usepackage{pgfplots}
+% Nice color sets, see see http://colorbrewer2.org/	
+\usepgfplotslibrary{colorbrewer}
+% initialize Set1-4 from colorbrewer (we're comparing 4 classes),
+\pgfplotsset{compat = 1.15, cycle list/Set1-8} 
+% Tikz is loaded automatically by pgfplots
+\usetikzlibrary{pgfplots.statistics, pgfplots.colorbrewer} 
+% provides \pgfplotstabletranspose
+\usepackage{pgfplotstable}
+\usepackage{filecontents}
+
+\begin{document}
+
+%\begin{tikzpicture}[font=\sffamily]
+\begin{tikzpicture}
+	
+\begin{axis}[
+    %ymode = log,
+%    boxplot/draw direction=y,
+    ybar, 
+    %minor tick num=2,
+    ymax    = 1,
+    ymin    = -0.02,
+    xmax    = 25.5,%12.5,
+    xmin    = 0.5,
+    width   =  10 cm,
+    height  =  3.5 cm,
+    scale only axis = true,
+    xtick align = inside,
+    % bar width   = 1pt,
+    % enlarge x limits = auto,
+    % xticklabel style = {
+    %     font=\small,
+    %     % at={(current axis.north west)},
+    %     % rotate=-90,
+    %     % xshift=-1ex,
+    %     yshift = 2pt,
+    % },
+    tick label style={/pgf/number format/assume math mode=true},
+    xtick = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25},
+    %xticklabels = {T$_{D_2}$, A$_{D_2}$, T$_{D_1}$, A$_{D_1}$, V$_{D_1}$},
+    %xticklabels = {1,2,3,4,5,6},
+    xticklabels = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25},
+    %ytick = {1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400},
+    %yticklabels = {1, 10, , , , , , , , , 100, , , 400},
+    ytick = {0, 0.25, 0.5, 0.75, 1}, 
+    yticklabels = {0, 25\%, 50\%, 75\%,100\%},  
+    ymajorgrids=true,
+    %ytick = {1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400},
+    %yticklabels =   {1, 10, , , , , , , , , 100, , , 400},
+       xticklabel style = {
+    	%font=\normalsize,
+	yshift =  2 pt,
+        xshift =  0 pt,
+    },
+    yticklabel style = {
+    %font=\normalsize,
+   	yshift =  0 pt,
+        xshift =  3 pt,
+    },
+    %yticklabel style = {font=\small},
+    boxplot/variable width,
+    boxplot/box extend=0.3,
+%    boxplot={
+%    	% in a formular:
+%    	draw position={
+%    		1+ floor(\plotnumofactualtype)
+%    		+ 1*fpumod(\plotnumofactualtype,5)
+%    	},
+%    	% that means the box extend must be at most 0.2 :
+%    	box extend=0.15,
+%    },
+    % % xticklabel pos=right,
+    % xtick pos = left,
+    % ytick pos = left,
+    % % yticklabel pos=right,
+    % % enlargelimits=0.15,
+    ylabel={5G ON-OFF Loop (\%)},
+    xlabel={},
+    xlabel style={
+        %font=\small,
+        % at={(current axis.north west)},
+        % rotate=-90,
+       %xshift= -10pt,
+        yshift = 5pt,
+    },
+    ylabel style={
+        font=\small,
+        % at={(current axis.north west)},
+        % rotate=-90,
+        %text width=2.8cm,
+        align=center,
+        xshift=0pt,
+        yshift = -7 pt,
+    },
+    bar width=3mm,
+legend style={
+	at      = {(1, 1)},
+	font    = \normalsize,
+	%font=\small,
+	fill    = none,
+	draw    = none,
+	anchor  = north east,
+	legend cell align   = left,
+	legend columns      = 2,
+	nodes={scale=1, transform shape},
+},
+legend image code/.code={
+        \draw [#1] (0cm,-0.1cm) rectangle (0.1cm,0.1cm); },
+%    xlabel style={
+%        font=\large,
+%        % at={(current axis.north west)},
+%        % rotate=-90,
+%        % xshift=-1ex,
+%        xshift = 0 pt,
+%        yshift = 3pt,
+%    },
+    % symbolic x coords={att, tmo, sprint, cmcc, fi},
+    % xticklabels={AT\&T, T-Mobile, Sprint, China Mobile, Google-Fi},
+    % xtick=data,
+    % nodes near coords,
+    % nodes near coords align={vertical},
+    %cycle list={{myblue},{myred}},
+    ]
+    
+%		\foreach \n in {1,...,3} {
+%			\addplot+[boxplot, fill, draw=black] table[y index=\n] {\datatransposed};
+%		}    
+
+% fill=myred,
+
+
+\addplot+[
+    myblue,
+    line width=0.5pt,
+    %fill=myblue,
+    myblue, 
+    fill opacity=0,
+    %postaction={pattern=north east lines, opacity=0.5},
+    bar shift=0pt
+]
+table[
+x expr=\thisrow{index},
+y = run_with_onoff_ratio,
+col sep=comma,
+] {onoff_loops_location_stats_t_new_static_campus.csv};
+%onoff_loops_location_stats_t_campus
+
+
+\addplot+[
+    %line width=0.5pt,
+    myred,
+    fill=myred,
+    fill opacity=0.1,
+    postaction={pattern=north west lines, opacity=0.1},
+%    bar width=7pt,
+    bar shift=0pt
+]
+table[
+x expr=\thisrow{index},
+y = run_with_onoff_ratio,
+col sep=comma,
+] {onoff_loops_location_stats_t_campus_low.csv};
+
+
+\addplot+[
+    %line width=0.5pt,
+    myred,
+    fill=myred,
+    fill opacity=0.25,
+    %postaction={pattern=north west lines, opacity=0.5},
+%    bar width=7pt,
+    bar shift=0pt
+]
+table[
+x expr=\thisrow{index},
+y = run_with_onoff_ratio,
+col sep=comma,
+] {onoff_loops_location_stats_t_campus_medium.csv};
+
+
+\addplot+[
+    myred,
+    %line width=0.5pt,
+    fill=myred,  
+    myred,
+    fill opacity=0.5,
+    postaction={pattern=north east lines, opacity=0.1},
+    bar shift=0pt,
+]
+table[
+x expr=\thisrow{index},
+y = run_with_onoff_ratio,
+col sep=comma,
+] {onoff_loops_location_stats_t_campus_poor.csv};
+
+
+\addplot+[
+    myred,
+    %line width=0.5pt,
+    fill=myred,  
+    %fill opacity=1,
+    %postaction={pattern=north east lines, opacity=0.5},
+    bar shift=0pt
+]
+table[
+x expr=\thisrow{index},
+y = run_with_onoff_ratio,
+col sep=comma,
+] {onoff_loops_location_stats_t_campus_full.csv};
+%onoff_location_stats_t_campus_full
+
+
+
+
+
+
+%\legend{5G ON, 5G OFF}
+
+%\draw[black,solid,line width=0.5pt] (axis cs:0,0) -- (axis cs: 20,0);
+
+
+\end{axis}
+\end{tikzpicture}
+
+\end{document}
+

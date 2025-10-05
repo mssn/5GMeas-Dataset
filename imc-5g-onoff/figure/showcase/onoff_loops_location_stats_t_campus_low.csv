@@ -1,0 +1,3 @@
+index,location,lat,lon,type1_num,type2_num,type3_num,run_num,run_with_onoff_num,run_with_onoff_ratio,onoff_event_num
+19,TP22,40.42527,-86.92859,4,0,1,5,1,0.2,4
+20,TP21,40.42058,-86.92278,8,0,1,9,1,0.111111111,1

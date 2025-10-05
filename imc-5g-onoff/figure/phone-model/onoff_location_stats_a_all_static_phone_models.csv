@@ -1,0 +1,31 @@
+phone,location,location_oldname,run_num,run_with_onoff_num,run_with_onoff_ratio
+OnePlus 12R,L1,AP14,5,5,1
+OnePlus 12R,L2,AP15,7,7,1
+OnePlus 12R,L3,AP16,5,5,1
+OnePlus 12R,L4,AP17,6,5,0.833333333
+OnePlus 12R,L5,AP22,5,5,1
+OnePlus 13,L1,AP14,5,5,1
+OnePlus 13,L2,AP15,5,5,1
+OnePlus 13,L3,AP16,5,5,1
+OnePlus 13,L4,AP17,5,3,0.6
+OnePlus 13,L5,AP22,5,3,0.6
+OnePlus 13R,L1,AP14,5,5,1
+OnePlus 13R,L2,AP15,5,4,0.8
+OnePlus 13R,L3,AP16,5,3,0.6
+OnePlus 13R,L4,AP17,5,5,1
+OnePlus 13R,L5,AP22,5,5,1
+Samsung S23 Ultra,L1,AP14,5,5,1
+Samsung S23 Ultra,L2,AP15,5,5,1
+Samsung S23 Ultra,L3,AP16,5,3,0.6
+Samsung S23 Ultra,L4,AP17,5,4,0.8
+Samsung S23 Ultra,L5,AP22,5,4,0.8
+OnePlus 10 Pro,L1,AP14,5,0,0
+OnePlus 10 Pro,L2,AP15,5,0,0
+OnePlus 10 Pro,L3,AP16,5,0,0
+OnePlus 10 Pro,L4,AP17,5,0,0
+OnePlus 10 Pro,L5,AP22,5,0,0
+Pixel 5,L1,AP14,5,5,1
+Pixel 5,L2,AP15,5,5,1
+Pixel 5,L3,AP16,5,4,0.8
+Pixel 5,L4,AP17,5,5,1
+Pixel 5,L5,AP22,5,5,1
